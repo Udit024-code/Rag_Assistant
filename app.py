@@ -62,14 +62,21 @@ if uploaded_file:
                 with st.spinner("Searching index and generating answer..."):
                     try:
                         # 4. Run the pipeline using the memory-loaded index and chunks
-                        answer = rag_pipeline(
-                            question=question, 
-                            index=st.session_state.index, 
+                        answer, sources = rag_pipeline(
+                            question=question,
+                            index=st.session_state.index,
                             chunks=st.session_state.chunks
                         )
-                        
+
                         # Display the response cleanly using Markdown
                         st.markdown("### Answer:")
                         st.write(answer)
+
+                        # Show the retrieved source chunks the answer is grounded in,
+                        # so the user can verify it against the original document.
+                        with st.expander(f"📄 Sources ({len(sources)} chunks retrieved)"):
+                            for i, chunk in enumerate(sources, start=1):
+                                st.markdown(f"**{i}. Page {chunk['page']}**")
+                                st.caption(chunk["text"])
                     except Exception as e:
                         st.error(f"An error occurred during execution: {e}")

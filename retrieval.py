@@ -12,7 +12,10 @@ def embed_chunks(chunks) -> np.ndarray:
 
   text_list = [chunk["text"] for chunk in chunks]
 
-  embeddings = model.encode(text_list)
+  # normalize_embeddings=True gives unit-length vectors, so inner-product
+  # search (IndexFlatIP) behaves as cosine similarity — the standard choice
+  # for text retrieval.
+  embeddings = model.encode(text_list, normalize_embeddings=True)
 
   return embeddings
 
@@ -20,7 +23,8 @@ def embed_chunks(chunks) -> np.ndarray:
 
 def build_index(embeddings, chunks) -> list:
   dimension = embeddings.shape[1]
-  index = faiss.IndexFlatL2(dimension)
+  # Inner product on normalized vectors == cosine similarity.
+  index = faiss.IndexFlatIP(dimension)
 
   embeddings_float32 = embeddings.astype('float32')
 
@@ -35,7 +39,9 @@ def build_index(embeddings, chunks) -> list:
 
 
 def retrieve(query, index, chunks, model, top_k=3):
-  query_embedding = model.encode(query).astype('float32')
+  # Normalize the query the same way as the chunks so the inner-product
+  # search measures cosine similarity.
+  query_embedding = model.encode(query, normalize_embeddings=True).astype('float32')
 
   query_vector = query_embedding.reshape(1, -1)
 

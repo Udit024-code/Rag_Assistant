@@ -93,14 +93,16 @@ def rag_pipeline(question, index, chunks):
 
     # 2. Retrieve top-3 relevant chunks using your retrieval.py logic
     retrieved_chunks = retrieve(question, index, chunks, model, top_k=3)
-    
+
     # 3. Build the augmented prompt
     formatted_prompt = build_prompt(question, retrieved_chunks)
-    
+
     # 4. Generate grounded answer from the LLM
     answer = generate_answer(formatted_prompt)
-    
-    return answer
+
+    # Return the retrieved chunks too, so the UI can show the sources the
+    # answer was grounded in (page numbers + snippets).
+    return answer, retrieved_chunks
 
 
 
