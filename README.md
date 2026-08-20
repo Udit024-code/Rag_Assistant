@@ -40,7 +40,7 @@ question → embed → FAISS similarity search (top-k) → build augmented promp
 | PDF extraction | `pdfplumber` | Reliable page-level text extraction |
 | Chunking | `NLTK` sentence tokenizer | Sentence-aware chunks stay semantically coherent |
 | Embeddings | `all-MiniLM-L6-v2` (384-dim) | Small, fast, strong quality/size trade-off; runs on CPU |
-| Vector search | `FAISS` (`IndexFlatL2`) | Fast, exact nearest-neighbor search |
+| Vector search | `FAISS` (`IndexFlatIP`, cosine) | Exact nearest-neighbor search; cosine similarity on normalized vectors |
 | LLM | `Llama 3.1 8B` via **Groq** | Very fast inference with a free tier |
 | UI | `Streamlit` | Quickest path to a shareable web app |
 
@@ -110,7 +110,6 @@ python evaluate.py
 
 ## Possible improvements
 
-- Cosine similarity (normalized vectors + `IndexFlatIP`) instead of L2
 - A cross-encoder **reranker** for higher retrieval precision
 - **Hybrid search** (semantic + keyword/BM25)
 - Multi-document support with metadata filtering
