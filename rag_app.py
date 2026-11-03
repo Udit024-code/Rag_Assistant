@@ -58,12 +58,17 @@ def generate_answer(prompt):
     """
     try:
         response = client.chat.completions.create(
-            # Change this exact line below:
-            model="llama-3.1-8b-instant",  
+            # llama-3.1-8b-instant was shut down by Groq on 2026-08-16;
+            # gpt-oss-20b is Groq's recommended replacement.
+            model="openai/gpt-oss-20b",
             messages=[
                 {"role": "user", "content": prompt}
             ],
-            max_completion_tokens=1024
+            # gpt-oss is a reasoning model: its hidden reasoning tokens count
+            # toward max_completion_tokens, so keep reasoning short and leave
+            # headroom for the visible answer.
+            reasoning_effort="low",
+            max_completion_tokens=2048
         )
         # Extract the clean response text from Groq's structure
         return response.choices[0].message.content
