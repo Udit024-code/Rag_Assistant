@@ -1,72 +1,733 @@
 [
   {
-    "question": "What are the three structural blind spots that leave the AWE question unanswered in India?",
-    "expected_keywords": ["aggregate", "long-run", "heterogeneity", "persistence"],
-    "expected_pages": [4],
-    "source": "hand-written",
-    "verified": true
+    "question": "How many distinct retrieval tasks are included in the BEIR benchmark and can you name three of them?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      2
+    ],
+    "expected_keywords": [
+      "nine",
+      "tasks",
+      "fact checking",
+      "citation prediction",
+      "duplicate question retrieval"
+    ],
+    "reference_answer": "Nine tasks are included; examples are fact checking, citation prediction, and duplicate question retrieval.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
   },
   {
-    "question": "What dataset is used in this study, and how many households does it track?",
-    "expected_keywords": ["cphs", "cmie", "174,000", "80,000"],
-    "expected_pages": [6, 7],
-    "source": "hand-written",
-    "verified": true
+    "question": "What is the range of average query lengths across the BEIR datasets?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      2
+    ],
+    "expected_keywords": [
+      "average query length",
+      "3",
+      "192",
+      "words"
+    ],
+    "reference_answer": "The average query length varies between 3 and 192 words.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
   },
   {
-    "question": "What are the three core research questions (RQs) defined in the study framework?",
-    "expected_keywords": ["exist", "vary", "persist", "re-employment"],
-    "expected_pages": [4, 5],
-    "source": "hand-written",
-    "verified": true
+    "question": "Which dense retrieval model showed the largest increase in nDCG@10 after adding the missing relevance judgments on TREC‑COVID?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      9
+    ],
+    "expected_keywords": [
+      "colbert",
+      "ndcg@10",
+      "increase",
+      "0.735"
+    ],
+    "reference_answer": "ColBERT improved by 5.8 points, from 0.677 to 0.735.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
   },
   {
-    "question": "How does the study use the COVID-19 pandemic as a natural experiment to eliminate selection bias?",
-    "expected_keywords": ["lockdown", "exogenous", "unemployment", "bias"],
-    "expected_pages": [1, 7],
-    "source": "hand-written",
-    "verified": true
+    "question": "What is the Hole@10 percentage for the BM25 baseline on the TREC‑COVID dataset?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      9
+    ],
+    "expected_keywords": [
+      "bm25",
+      "hole@10",
+      "6.4%"
+    ],
+    "reference_answer": "BM25 has a Hole@10 of 6.4%.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
   },
   {
-    "question": "What is the specific percentage point gap between India's FLFPR and Vietnam's rate according to the global benchmarking data?",
-    "expected_keywords": ["48.1", "72.1%", "third"],
-    "expected_pages": [2],
-    "source": "hand-written",
-    "verified": true
+    "question": "Which 2020 study introduced a method for task‑agnostic compression of pre‑trained transformers using deep self‑attention distillation?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      14
+    ],
+    "expected_keywords": [
+      "miniLM",
+      "deep self-attention distillation",
+      "task-agnostic compression"
+    ],
+    "reference_answer": "MiniLM: Deep Self‑Attention Distillation for Task‑Agnostic Compression of Pre‑Trained Transformers (2020).",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
   },
   {
-    "question": "According to the data from Deshpande (2020), what percentage of women worked at least once in 4 years?",
-    "expected_keywords": ["44%", "44", "deshpande", "once"],
-    "expected_pages": [8],
-    "source": "hand-written",
-    "verified": true
+    "question": "What is the name of the 2020 open research dataset that aggregates COVID‑19 literature?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      14
+    ],
+    "expected_keywords": [
+      "cord-19",
+      "covid-19",
+      "open research dataset"
+    ],
+    "reference_answer": "CORD‑19 (COVID‑19 Open Research Dataset).",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
   },
   {
-    "question": "What econometric model is proposed to test the persistence of the Added Worker Effect after male employment recovers?",
-    "expected_keywords": ["difference-in-differences", "did", "three periods"],
-    "expected_pages": [4, 6, 7],
-    "source": "hand-written",
-    "verified": true
+    "question": "Did the authors provide error bars for the experimental results?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      16
+    ],
+    "expected_keywords": [
+      "error bars",
+      "experiments",
+      "no"
+    ],
+    "reference_answer": "No, they did not report error bars because they used pre‑trained models without suitable training code.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
   },
   {
-    "question": "According to the McKinsey Global Institute framework, how much could India add to its GDP through gender parity?",
-    "expected_keywords": ["0.7t", "16%", "mckinsey", "parity"],
-    "expected_pages": [10],
-    "source": "hand-written",
-    "verified": true
+    "question": "What information about computational resources was included in the checklist?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      16
+    ],
+    "expected_keywords": [
+      "compute",
+      "GPU",
+      "CPU",
+      "not total"
+    ],
+    "reference_answer": "They mentioned the type of GPU and CPU used but did not disclose the total amount of compute.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
   },
   {
-    "question": "How is the existing Indian FLFP literature thematic focus distributed compared to this study's design?",
-    "expected_keywords": ["skewed", "structural", "45%", "equal-weight"],
-    "expected_pages": [9],
-    "source": "hand-written",
-    "verified": true
+    "question": "How many unique queries are in the Quora Duplicate Questions corpus used for evaluation?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      19
+    ],
+    "expected_keywords": [
+      "522,931",
+      "unique queries"
+    ],
+    "reference_answer": "522,931 unique queries",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
   },
   {
-    "question": "What is the critical policy implication if an increase in FLFP during a crisis is confirmed to be driven by the Added Worker Effect?",
-    "expected_keywords": ["distress-entry", "vulnerability", "cyclical", "multipliers"],
-    "expected_pages": [10],
-    "source": "hand-written",
-    "verified": true
+    "question": "In the SCIDOCS citation prediction task, how many relevant papers are provided for each query paper?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      19
+    ],
+    "expected_keywords": [
+      "scidocs",
+      "5 relevant papers"
+    ],
+    "reference_answer": "5 relevant papers per query",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "What speed improvement does ColBERT achieve when used as a re‑ranker compared to standard BERT‑based models?",
+    "doc": "colbert_khattab2020.pdf",
+    "expected_pages": [
+      2
+    ],
+    "expected_keywords": [
+      "170× speedup",
+      "14,000× fewer flops"
+    ],
+    "reference_answer": "ColBERT (re‑rank) delivers over 170× speedup while requiring 14,000× fewer FLOPs.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "How does ColBERT compute relevance between a query and a document using its late interaction mechanism?",
+    "doc": "colbert_khattab2020.pdf",
+    "expected_pages": [
+      2
+    ],
+    "expected_keywords": [
+      "late interaction",
+      "maxsim",
+      "query",
+      "document",
+      "similarity"
+    ],
+    "reference_answer": "It encodes the query and document separately into contextual embeddings and then applies a MaxSim operator that computes the maximum similarity (e.g., cosine) between each query embedding and all document embeddings, summing these scores.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "What is the reported MRR@10 for the Transformer‑Kernel model on the MS MARCO development set?",
+    "doc": "colbert_khattab2020.pdf",
+    "expected_pages": [
+      3
+    ],
+    "expected_keywords": [
+      "mr r@10",
+      "tk",
+      "ms marco"
+    ],
+    "reference_answer": "31% MRR@10",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "Which neural ranking model uses a MaxSim‑based late interaction mechanism and achieves up to 36% MRR@10 on MS MARCO?",
+    "doc": "colbert_khattab2020.pdf",
+    "expected_pages": [
+      3
+    ],
+    "expected_keywords": [
+      "colbert",
+      "maxsim",
+      "mr r@10"
+    ],
+    "reference_answer": "ColBERT",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "What mechanism does ColBERT use to allow BERT to incorporate new or re‑weighted query terms during encoding?",
+    "doc": "colbert_khattab2020.pdf",
+    "expected_pages": [
+      4
+    ],
+    "expected_keywords": [
+      "query augmentation",
+      "masked tokens",
+      "bert",
+      "embeddings"
+    ],
+    "reference_answer": "It uses query augmentation by inserting masked tokens into the input sequence, letting BERT generate query‑based embeddings at those positions.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "How does the document encoder reduce the number of embeddings per document before late interaction?",
+    "doc": "colbert_khattab2020.pdf",
+    "expected_pages": [
+      4
+    ],
+    "expected_keywords": [
+      "document encoder",
+      "filter",
+      "punctuation",
+      "embeddings"
+    ],
+    "reference_answer": "It filters out embeddings that correspond to punctuation symbols based on a predefined list, keeping only the remaining token embeddings.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "Which off‑the‑shelf library is employed to perform large‑scale vector similarity search when indexing document embeddings?",
+    "doc": "colbert_khattab2020.pdf",
+    "expected_pages": [
+      5
+    ],
+    "expected_keywords": [
+      "faiss",
+      "vector-similarity",
+      "library"
+    ],
+    "reference_answer": "faiss",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "In what way does ColBERT lower the scoring cost relative to standard BERT rankers?",
+    "doc": "colbert_khattab2020.pdf",
+    "expected_pages": [
+      5
+    ],
+    "expected_keywords": [
+      "late-interaction",
+      "maxsim",
+      "query length",
+      "attention"
+    ],
+    "reference_answer": "It feeds BERT only the short query sequence and applies a late‑interaction MaxSim operator, avoiding the quadratic attention over the combined query‑document length.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "What is the MRR@10 score of the ColBERT end-to-end model on the local evaluation set?",
+    "doc": "colbert_khattab2020.pdf",
+    "expected_pages": [
+      7
+    ],
+    "expected_keywords": [
+      "colbert",
+      "end-to-end",
+      "mrr@10",
+      "local eval"
+    ],
+    "reference_answer": "36.7",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "How many FLOPs per query does the BERT large model use, and how does that compare to ColBERT built on BERT base?",
+    "doc": "colbert_khattab2020.pdf",
+    "expected_pages": [
+      7
+    ],
+    "expected_keywords": [
+      "bert",
+      "large",
+      "flops/query",
+      "colbert",
+      "over bert base"
+    ],
+    "reference_answer": "BERT large requires 340T FLOPs per query (48,600×), while ColBERT over BERT base uses 7B FLOPs per query (1×).",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "What is the latency reported for the Anserini BM25 baseline in the full‑retrieval experiments?",
+    "doc": "colbert_khattab2020.pdf",
+    "expected_pages": [
+      8
+    ],
+    "expected_keywords": [
+      "anserini",
+      "bm25",
+      "latency",
+      "18.7"
+    ],
+    "reference_answer": "The Anserini BM25 baseline has a latency of 18.7 milliseconds.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "By how many times does BERT's FLOP count exceed ColBERT's when re‑ranking the top‑10 results?",
+    "doc": "colbert_khattab2020.pdf",
+    "expected_pages": [
+      8
+    ],
+    "expected_keywords": [
+      "flops",
+      "bert",
+      "colbert",
+      "k=10",
+      "180"
+    ],
+    "reference_answer": "At k = 10, BERT requires roughly 180 times more FLOPs than ColBERT.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "What top‑5 retrieval accuracy does the Dense Passage Retriever achieve compared to BM25?",
+    "doc": "dpr_karpukhin2020.pdf",
+    "expected_pages": [
+      2
+    ],
+    "expected_keywords": [
+      "top-5",
+      "accuracy",
+      "65.2%",
+      "42.9%"
+    ],
+    "reference_answer": "65.2% versus 42.9%",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "How many passages were indexed in the experiments described for the DPR system?",
+    "doc": "dpr_karpukhin2020.pdf",
+    "expected_pages": [
+      2
+    ],
+    "expected_keywords": [
+      "21 million",
+      "passages",
+      "experiments"
+    ],
+    "reference_answer": "21 million passages",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "What three categories of negative passages are used during training of the dense passage retriever?",
+    "doc": "dpr_karpukhin2020.pdf",
+    "expected_pages": [
+      3
+    ],
+    "expected_keywords": [
+      "random",
+      "bm25",
+      "gold",
+      "mini‑batch"
+    ],
+    "reference_answer": "Random passages from the corpus, top BM25 passages that lack most question tokens, and gold passages paired with other questions from the same mini‑batch.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "How many question‑passage pairs are processed in each training batch and what matrix is formed from their embeddings?",
+    "doc": "dpr_karpukhin2020.pdf",
+    "expected_pages": [
+      3
+    ],
+    "expected_keywords": [
+      "b",
+      "b²",
+      "matrix",
+      "s = qpt"
+    ],
+    "reference_answer": "Each batch of size B processes B² question‑passage pairs, and the similarity scores are stored in a B × B matrix S = Q Pᵀ.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "What is the top‑20 retrieval accuracy of the Dense Passage Retriever on Natural Questions compared with BM25?",
+    "doc": "dpr_karpukhin2020.pdf",
+    "expected_pages": [
+      5
+    ],
+    "expected_keywords": [
+      "dpr",
+      "top-20",
+      "natural questions",
+      "bm25",
+      "78.4",
+      "59.1"
+    ],
+    "reference_answer": "DPR achieves 78.4% top‑20 accuracy, while BM25 achieves 59.1%.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "How many training epochs are used for large versus small datasets when training the DPR model?",
+    "doc": "dpr_karpukhin2020.pdf",
+    "expected_pages": [
+      5
+    ],
+    "expected_keywords": [
+      "epochs",
+      "large datasets",
+      "small datasets",
+      "40",
+      "60",
+      "100",
+      "nq",
+      "triviaqa",
+      "squad",
+      "trec",
+      "wq"
+    ],
+    "reference_answer": "The model is trained for up to 40–60 epochs on large datasets (Natural Questions, TriviaQA, SQuAD) and for 100 epochs on small datasets (TREC, WebQuestions).",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "Which retrieval approach achieved new state-of-the-art results on several open-domain question answering benchmarks according to the authors?",
+    "doc": "dpr_karpukhin2020.pdf",
+    "expected_pages": [
+      9
+    ],
+    "expected_keywords": [
+      "dense retrieval",
+      "dual-encoder",
+      "state-of-the-art",
+      "open-domain qa"
+    ],
+    "reference_answer": "Dense retrieval using a dual‑encoder with cross‑attention mechanisms.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "What alternative to the dual‑encoder framework is described, and what component does it add to BERT encoders?",
+    "doc": "dpr_karpukhin2020.pdf",
+    "expected_pages": [
+      9
+    ],
+    "expected_keywords": [
+      "late-interaction",
+      "bert",
+      "dual-encoder",
+      "framework"
+    ],
+    "reference_answer": "A late‑interaction operator added on top of the BERT encoders.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "Which 2014 study introduced Asymmetric Locality Sensitive Hashing for sublinear time maximum inner product search?",
+    "doc": "dpr_karpukhin2020.pdf",
+    "expected_pages": [
+      11
+    ],
+    "expected_keywords": [
+      "alsh",
+      "maximum inner product search",
+      "2014"
+    ],
+    "reference_answer": "Lin, Ji, Liu, and Sun (2014) presented ALSH for sublinear time MIPS.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "What is the title of the 2020 paper that examines the amount of knowledge that can be stored in language model parameters?",
+    "doc": "dpr_karpukhin2020.pdf",
+    "expected_pages": [
+      11
+    ],
+    "expected_keywords": [
+      "knowledge",
+      "parameters",
+      "language model",
+      "2020"
+    ],
+    "reference_answer": "The paper is titled \"How much knowledge can you pack into the parameters of a language model?\" (2020).",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "What is the Top‑1 retrieval accuracy of the DPR model when it is trained using natural gold passages on the Natural Questions development set?",
+    "doc": "dpr_karpukhin2020.pdf",
+    "expected_pages": [
+      12
+    ],
+    "expected_keywords": [
+      "top-1",
+      "natural gold",
+      "44.9",
+      "dpr"
+    ],
+    "reference_answer": "44.9",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "What margin value is used for the triplet loss in the experiments on Natural Questions?",
+    "doc": "dpr_karpukhin2020.pdf",
+    "expected_pages": [
+      12
+    ],
+    "expected_keywords": [
+      "margin",
+      "triplet loss",
+      "1"
+    ],
+    "reference_answer": "1",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "Which pre‑trained models are used for the retriever and generator in the Retrieval‑Augmented Generation approach?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      2
+    ],
+    "expected_keywords": [
+      "retriever",
+      "generator",
+      "dpr",
+      "bart"
+    ],
+    "reference_answer": "The retriever is a Dense Passage Retriever (DPR) and the generator is a BART seq2seq transformer.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "On which knowledge‑intensive benchmark datasets does the RAG model achieve state‑of‑the‑art performance?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      2
+    ],
+    "expected_keywords": [
+      "natural questions",
+      "webquestions",
+      "curatedtrec"
+    ],
+    "reference_answer": "It reaches state‑of‑the‑art results on Open Natural Questions, WebQuestions, and CuratedTrec.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "What metric is used to evaluate the quality of generated Jeopardy questions and why is it preferred over standard BLEU?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      5
+    ],
+    "expected_keywords": [
+      "q-bleu-1",
+      "entities",
+      "human judgment"
+    ],
+    "reference_answer": "The Q-BLEU-1 metric is used because it gives higher weight to matching entities and correlates better with human judgments for question generation.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "How does the RAG model handle the FEVER fact verification task without using evidence supervision?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      5
+    ],
+    "expected_keywords": [
+      "fever",
+      "class labels",
+      "single output tokens",
+      "no evidence supervision"
+    ],
+    "reference_answer": "RAG maps the FEVER class labels to single output tokens and trains directly on claim-class pairs, training without any supervision on the retrieved evidence.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "What advantage does grounding the model in Wikipedia provide regarding the factual accuracy of its outputs?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      10
+    ],
+    "expected_keywords": [
+      "wikipedia",
+      "hallucinate",
+      "factual"
+    ],
+    "reference_answer": "It reduces hallucinations and makes generations more factual.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "Which types of harmful content could the RAG model potentially be misused to generate, similar to concerns with GPT‑2?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      10
+    ],
+    "expected_keywords": [
+      "gpt-2",
+      "spam/phishing",
+      "abuse",
+      "misleading"
+    ],
+    "reference_answer": "Abusive, fake or misleading news, impersonation, and automated spam or phishing.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "Which 2020 work proposed the Retrieval‑augmented Language Model (REALM) and who are the authors?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      12
+    ],
+    "expected_keywords": [
+      "realm",
+      "retrieval‑augmented language model",
+      "2020",
+      "guu"
+    ],
+    "reference_answer": "REALM was introduced in 2020 by Kelvin Guu, Kenton Lee, Zora Tung, Panupong Pasupat, and Ming‑Wei Chang.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "What optimization algorithm is referenced for stochastic optimization and in which year was it published?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      12
+    ],
+    "expected_keywords": [
+      "adam",
+      "stochastic optimization",
+      "2015",
+      "kingma"
+    ],
+    "reference_answer": "The Adam optimizer, introduced by Diederik P. Kingma and Jimmy Ba, was published in 2015.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "What dataset is introduced for large‑scale fact extraction and verification, and in which conference proceedings was it published?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      15
+    ],
+    "expected_keywords": [
+      "fever",
+      "large-scale dataset",
+      "fact extraction",
+      "verification",
+      "naacl"
+    ],
+    "reference_answer": "The FEVER dataset, presented at the 2018 NAACL Human Language Technologies conference.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "Which method is proposed to prevent catastrophic forgetting when reducing model bias in sentence‑pair classification, and where was it posted?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      15
+    ],
+    "expected_keywords": [
+      "elastic weight consolidation",
+      "catastrophic forgetting",
+      "model biases",
+      "sentence-pair classification",
+      "arxiv"
+    ],
+    "reference_answer": "Elastic weight consolidation, described in an arXiv pre‑print (abs/2004.14366).",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "How many training instances are provided for the Natural Questions dataset?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      19
+    ],
+    "expected_keywords": [
+      "natural questions",
+      "train",
+      "79169"
+    ],
+    "reference_answer": "79,169 training instances.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "Which model obtains a higher exact‑match score on Natural Questions, T5‑large or RAG‑Sequence?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      19
+    ],
+    "expected_keywords": [
+      "rag-sequence",
+      "t5-large",
+      "exact match",
+      "natural questions"
+    ],
+    "reference_answer": "RAG‑Sequence, with 44.5 EM, outperforms T5‑large’s 28.9 EM.",
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
   }
 ]

@@ -5,3 +5,6 @@ __pycache__/
 # Local index artifacts (rebuilt from the PDF)
 chunks.index
 chunks_metadata.pkl
+
+# Eval papers are downloaded by eval/download_docs.py, not committed
+eval/docs/

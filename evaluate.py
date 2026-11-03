@@ -1,25 +1,28 @@
 """Evaluation harness for the RAG pipeline.
 
 Measures retrieval quality against a labelled test set (eval/testset.json),
-where each question lists the page(s) that contain its answer. Labels are
-page-level on purpose: they stay valid when the chunking strategy changes,
-so every future pipeline can be scored against the same ground truth.
+where each question names the document and page(s) that contain its answer.
+Labels are page-level on purpose: they stay valid when the chunking strategy
+changes, so every future pipeline can be scored against the same ground truth.
 
 Usage:
-    python evaluate.py --pdf paper.pdf
-    python evaluate.py --pdf paper.pdf --models all-MiniLM-L6-v2 BAAI/bge-small-en-v1.5
-    python evaluate.py --pdf paper.pdf --answers      # also score generated answers (uses Groq quota)
+    python evaluate.py
+    python evaluate.py --models all-MiniLM-L6-v2 BAAI/bge-small-en-v1.5
+    python evaluate.py --x-tolerance 1.5               # fixed PDF word spacing
+    python evaluate.py --answers                       # also score generated answers (uses Groq quota)
 """
 import argparse
+import glob
 import json
 import os
 import time
 from datetime import datetime
 
-from pipeline import build_pipeline
+from pipeline import DEFAULT_X_TOLERANCE, build_corpus
 from retrieval import DEFAULT_EMBED_MODEL, build_index, embed_chunks, get_embed_model, retrieve
 
 TESTSET_PATH = os.path.join('eval', 'testset.json')
+DOCS_DIR = os.path.join('eval', 'docs')
 RESULTS_DIR = os.path.join('eval', 'results')
 
 KS = (1, 3, 5)  # cut-offs for Hit@k
@@ -34,10 +37,15 @@ def load_testset(path=TESTSET_PATH, include_unverified=False):
     return testset
 
 
-def first_relevant_rank(retrieved_chunks, expected_pages):
+def is_relevant(chunk, test):
+    # With several documents indexed, page 4 of the wrong paper doesn't count.
+    return chunk['source'] == test['doc'] and chunk['page'] in test['expected_pages']
+
+
+def first_relevant_rank(retrieved_chunks, test):
     """1-based rank of the first chunk from a correct page, or None if missing."""
     for rank, chunk in enumerate(retrieved_chunks, start=1):
-        if chunk['page'] in expected_pages:
+        if is_relevant(chunk, test):
             return rank
     return None
 
@@ -52,11 +60,11 @@ def evaluate_retrieval(testset, retrieve_fn):
     per_question = []
     for test in testset:
         results = retrieve_fn(test['question'], MAX_K)
-        rank = first_relevant_rank(results, test['expected_pages'])
+        rank = first_relevant_rank(results, test)
         per_question.append({
             'question': test['question'],
-            'expected_pages': test['expected_pages'],
-            'retrieved_pages': [r['page'] for r in results],
+            'expected': f"{test['doc']} p{test['expected_pages']}",
+            'retrieved': [f"{r['source']} p{r['page']}" for r in results],
             'rank': rank,
         })
 
@@ -100,17 +108,21 @@ def evaluate_answers(testset, index, chunks):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('--pdf', required=True, help='PDF the test set was written for')
+    parser.add_argument('--docs-dir', default=DOCS_DIR, help='folder of PDFs the test set was written for')
     parser.add_argument('--models', nargs='+', default=[DEFAULT_EMBED_MODEL], help='embedding models to compare')
     parser.add_argument('--chunk-size', type=int, default=5, help='sentences per chunk')
     parser.add_argument('--overlap', type=int, default=1, help='sentences shared between chunks')
+    parser.add_argument('--x-tolerance', type=float, default=DEFAULT_X_TOLERANCE, help='pdfplumber letter-gap tolerance')
     parser.add_argument('--include-unverified', action='store_true', help='also use LLM-drafted questions not yet reviewed')
     parser.add_argument('--answers', action='store_true', help=f'also score generated answers with {DEFAULT_EMBED_MODEL} (uses Groq quota)')
     args = parser.parse_args()
 
     testset = load_testset(include_unverified=args.include_unverified)
-    chunks = build_pipeline(args.pdf, chunk_size=args.chunk_size, overlap=args.overlap)
-    print(f'{len(testset)} questions, {len(chunks)} chunks from {os.path.basename(args.pdf)}\n')
+    if not testset:
+        raise SystemExit('No verified questions yet - review eval/testset.json or pass --include-unverified.')
+    pdf_paths = sorted(glob.glob(os.path.join(args.docs_dir, '*.pdf')))
+    chunks = build_corpus(pdf_paths, args.chunk_size, args.overlap, x_tolerance=args.x_tolerance)
+    print(f'{len(testset)} questions, {len(chunks)} chunks from {len(pdf_paths)} PDFs\n')
 
     runs = []
     for model_name in args.models:
@@ -148,13 +160,15 @@ def main():
         if misses:
             print(f"\nMissed in top {MAX_K} by {run['model']}:")
             for q in misses:
-                print(f"  - {q['question']}\n    expected pages {q['expected_pages']}, got {q['retrieved_pages']}")
+                print(f"  - {q['question']}\n    expected {q['expected']}, got {q['retrieved'][:3]}")
 
     os.makedirs(RESULTS_DIR, exist_ok=True)
     out_path = os.path.join(RESULTS_DIR, datetime.now().strftime('%Y%m%d-%H%M%S') + '.json')
     with open(out_path, 'w', encoding='utf-8') as f:
-        json.dump({'pdf': os.path.basename(args.pdf), 'chunk_size': args.chunk_size, 'overlap': args.overlap,
-                   'questions': len(testset), 'runs': runs}, f, indent=2)
+        json.dump({'docs': [os.path.basename(p) for p in pdf_paths], 'chunk_size': args.chunk_size,
+                   'overlap': args.overlap, 'x_tolerance': args.x_tolerance,
+                   'questions': len(testset), 'include_unverified': args.include_unverified,
+                   'runs': runs}, f, indent=2)
     print(f'\nSaved {out_path}')
 
 

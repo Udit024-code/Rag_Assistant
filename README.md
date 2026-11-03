@@ -97,14 +97,26 @@ Then open `http://localhost:8501`, upload a PDF, and start asking questions.
 
 ## Evaluation
 
-`evaluate.py` measures quality against a test set of 10 questions:
+Retrieval is scored on four public RAG papers (RAG, DPR, ColBERT, BEIR) with a test set in `eval/testset.json`, where each question is labelled with the paper and page that answer it.
 
-- **Retrieval recall@k** — did the top-k retrieved chunks include a correct page?
-- **End-to-end answer quality** — does the generated answer contain the expected keywords?
+- **Hit@k**: did a chunk from a correct page appear in the top k results?
+- **MRR**: how high the first correct chunk ranks, on average.
+- **Truncated**: share of chunks longer than the embedding model can read.
 
 ```bash
-python evaluate.py
+python eval/download_docs.py          # fetch the papers (pinned arXiv versions)
+python evaluate.py --models all-MiniLM-L6-v2 BAAI/bge-small-en-v1.5
+python evaluate.py --answers          # also score generated answers (uses Groq quota)
 ```
+
+`eval/generate_testset.py` drafts more questions with an LLM; each is marked unverified until reviewed by hand.
+
+| Change | Hit@5 | MRR |
+|---|---|---|
+| Baseline (MiniLM, pdfplumber defaults) | 0.52 | 0.40 |
+| Fix PDF word spacing (`x_tolerance=1.5`) | 0.78 | 0.65 |
+
+*Preliminary: 46 LLM-drafted questions, not yet hand-verified.*
 
 ---
 
