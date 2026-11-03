@@ -1,9 +1,6 @@
 import os
-import pickle
-import faiss
 from groq import Groq
 from dotenv import load_dotenv
-from sentence_transformers import SentenceTransformer
 
 # Import retrieval function from your existing retrieval.py file
 from retrieval import retrieve
@@ -77,27 +74,13 @@ def generate_answer(prompt):
         return f"API Error: Failed to generate answer due to: {e}"
     
 
-# Load the embedding model once at import time and reuse it for every query
-# (loading it on each call is slow, especially on limited cloud hardware).
-_EMBED_MODEL = None
-
-
-def _get_embed_model():
-    global _EMBED_MODEL
-    if _EMBED_MODEL is None:
-        _EMBED_MODEL = SentenceTransformer('all-MiniLM-L6-v2')
-    return _EMBED_MODEL
-
-
 def rag_pipeline(question, index, chunks):
     """
     Step 4: Orchestrates the entire end-to-end RAG system in memory.
     """
-    # 1. Load Embedding Model (cached after the first call)
-    model = _get_embed_model()
-
-    # 2. Retrieve top-3 relevant chunks using your retrieval.py logic
-    retrieved_chunks = retrieve(question, index, chunks, model, top_k=3)
+    # 1-2. Retrieve top-3 relevant chunks. retrieval.py caches the embedding
+    # model, so indexing and querying share one loaded copy.
+    retrieved_chunks = retrieve(question, index, chunks, top_k=3)
 
     # 3. Build the augmented prompt
     formatted_prompt = build_prompt(question, retrieved_chunks)

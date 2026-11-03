@@ -2,3 +2,6 @@
 venv/
 __pycache__/
 .streamlit/secrets.toml
+# Local index artifacts (rebuilt from the PDF)
+chunks.index
+chunks_metadata.pkl

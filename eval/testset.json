@@ -1,0 +1,72 @@
+[
+  {
+    "question": "What are the three structural blind spots that leave the AWE question unanswered in India?",
+    "expected_keywords": ["aggregate", "long-run", "heterogeneity", "persistence"],
+    "expected_pages": [4],
+    "source": "hand-written",
+    "verified": true
+  },
+  {
+    "question": "What dataset is used in this study, and how many households does it track?",
+    "expected_keywords": ["cphs", "cmie", "174,000", "80,000"],
+    "expected_pages": [6, 7],
+    "source": "hand-written",
+    "verified": true
+  },
+  {
+    "question": "What are the three core research questions (RQs) defined in the study framework?",
+    "expected_keywords": ["exist", "vary", "persist", "re-employment"],
+    "expected_pages": [4, 5],
+    "source": "hand-written",
+    "verified": true
+  },
+  {
+    "question": "How does the study use the COVID-19 pandemic as a natural experiment to eliminate selection bias?",
+    "expected_keywords": ["lockdown", "exogenous", "unemployment", "bias"],
+    "expected_pages": [1, 7],
+    "source": "hand-written",
+    "verified": true
+  },
+  {
+    "question": "What is the specific percentage point gap between India's FLFPR and Vietnam's rate according to the global benchmarking data?",
+    "expected_keywords": ["48.1", "72.1%", "third"],
+    "expected_pages": [2],
+    "source": "hand-written",
+    "verified": true
+  },
+  {
+    "question": "According to the data from Deshpande (2020), what percentage of women worked at least once in 4 years?",
+    "expected_keywords": ["44%", "44", "deshpande", "once"],
+    "expected_pages": [8],
+    "source": "hand-written",
+    "verified": true
+  },
+  {
+    "question": "What econometric model is proposed to test the persistence of the Added Worker Effect after male employment recovers?",
+    "expected_keywords": ["difference-in-differences", "did", "three periods"],
+    "expected_pages": [4, 6, 7],
+    "source": "hand-written",
+    "verified": true
+  },
+  {
+    "question": "According to the McKinsey Global Institute framework, how much could India add to its GDP through gender parity?",
+    "expected_keywords": ["0.7t", "16%", "mckinsey", "parity"],
+    "expected_pages": [10],
+    "source": "hand-written",
+    "verified": true
+  },
+  {
+    "question": "How is the existing Indian FLFP literature thematic focus distributed compared to this study's design?",
+    "expected_keywords": ["skewed", "structural", "45%", "equal-weight"],
+    "expected_pages": [9],
+    "source": "hand-written",
+    "verified": true
+  },
+  {
+    "question": "What is the critical policy implication if an increase in FLFP during a crisis is confirmed to be driven by the Added Worker Effect?",
+    "expected_keywords": ["distress-entry", "vulnerability", "cyclical", "multipliers"],
+    "expected_pages": [10],
+    "source": "hand-written",
+    "verified": true
+  }
+]

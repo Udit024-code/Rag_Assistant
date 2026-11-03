@@ -1,102 +1,162 @@
-# add 10 questions to test the retrieval system
+"""Evaluation harness for the RAG pipeline.
 
-import pickle
+Measures retrieval quality against a labelled test set (eval/testset.json),
+where each question lists the page(s) that contain its answer. Labels are
+page-level on purpose: they stay valid when the chunking strategy changes,
+so every future pipeline can be scored against the same ground truth.
 
+Usage:
+    python evaluate.py --pdf paper.pdf
+    python evaluate.py --pdf paper.pdf --models all-MiniLM-L6-v2 BAAI/bge-small-en-v1.5
+    python evaluate.py --pdf paper.pdf --answers      # also score generated answers (uses Groq quota)
+"""
+import argparse
+import json
 import os
-from rag_app import rag_pipeline
-from sentence_transformers import SentenceTransformer
+import time
+from datetime import datetime
 
-from retrieval import retrieve
-import faiss
+from pipeline import build_pipeline
+from retrieval import DEFAULT_EMBED_MODEL, build_index, embed_chunks, get_embed_model, retrieve
 
-TEST_SET = [
-    {
-        'question': 'What are the three structural blind spots that leave the AWE question unanswered in India?',
-        'expected_keywords': ['aggregate', 'long-run', 'heterogeneity', 'persistence'],
-        'expected_pages': [4]
-    },
-    {
-        'question': 'What dataset is used in this study, and how many households does it track?',
-        'expected_keywords': ['cphs', 'cmie', '174,000', '80,000'],
-        'expected_pages': [6, 7]
-    },
-    {
-        'question': 'What are the three core research questions (RQs) defined in the study framework?',
-        'expected_keywords': ['exist', 'vary', 'persist', 're-employment'],
-        'expected_pages': [4, 5]
-    },
-    {
-        'question': 'How does the study use the COVID-19 pandemic as a natural experiment to eliminate selection bias?',
-        'expected_keywords': ['lockdown', 'exogenous', 'unemployment', 'bias'],
-        'expected_pages': [1, 7]
-    },
-    {
-        'question': 'What is the specific percentage point gap between India\'s FLFPR and Vietnam\'s rate according to the global benchmarking data?',
-        'expected_keywords': ['48.1', '72.1%', 'third'],
-        'expected_pages': [2]
-    },
-    {
-        'question': 'According to the data from Deshpande (2020), what percentage of women worked at least once in 4 years?',
-        'expected_keywords': ['44%', '44', 'deshpande', 'once'],
-        'expected_pages': [8]
-    },
-    {
-        'question': 'What econometric model is proposed to test the persistence of the Added Worker Effect after male employment recovers?',
-        'expected_keywords': ['difference-in-differences', 'did', 'three periods'],
-        'expected_pages': [4, 6, 7]
-    },
-    {
-        'question': 'According to the McKinsey Global Institute framework, how much could India add to its GDP through gender parity?',
-        'expected_keywords': ['0.7t', '16%', 'mckinsey', 'parity'],
-        'expected_pages': [10]
-    },
-    {
-        'question': 'How is the existing Indian FLFP literature thematic focus distributed compared to this study\'s design?',
-        'expected_keywords': ['skewed', 'structural', '45%', 'equal-weight'],
-        'expected_pages': [9]
-    },
-    {
-        'question': 'What is the critical policy implication if an increase in FLFP during a crisis is confirmed to be driven by the Added Worker Effect?',
-        'expected_keywords': ['distress-entry', 'vulnerability', 'cyclical', 'multipliers'],
-        'expected_pages': [10]
-    }
-]
+TESTSET_PATH = os.path.join('eval', 'testset.json')
+RESULTS_DIR = os.path.join('eval', 'results')
 
-def evaluate_retrieval(test_set, index, chunks, model):
+KS = (1, 3, 5)  # cut-offs for Hit@k
+MAX_K = 10      # depth searched when computing MRR
+
+
+def load_testset(path=TESTSET_PATH, include_unverified=False):
+    with open(path, encoding='utf-8') as f:
+        testset = json.load(f)
+    if not include_unverified:
+        testset = [t for t in testset if t.get('verified', False)]
+    return testset
+
+
+def first_relevant_rank(retrieved_chunks, expected_pages):
+    """1-based rank of the first chunk from a correct page, or None if missing."""
+    for rank, chunk in enumerate(retrieved_chunks, start=1):
+        if chunk['page'] in expected_pages:
+            return rank
+    return None
+
+
+def evaluate_retrieval(testset, retrieve_fn):
+    """Score any retriever: retrieve_fn(question, k) -> ranked list of chunks.
+
+    Hit@k  - share of questions with a correct page somewhere in the top k.
+    MRR    - mean of 1/rank of the first correct chunk (0 if not in top MAX_K);
+             rewards putting the right chunk first, not just somewhere.
+    """
+    per_question = []
+    for test in testset:
+        results = retrieve_fn(test['question'], MAX_K)
+        rank = first_relevant_rank(results, test['expected_pages'])
+        per_question.append({
+            'question': test['question'],
+            'expected_pages': test['expected_pages'],
+            'retrieved_pages': [r['page'] for r in results],
+            'rank': rank,
+        })
+
+    n = len(per_question)
+    metrics = {f'hit@{k}': sum(1 for q in per_question if q['rank'] and q['rank'] <= k) / n for k in KS}
+    metrics['mrr'] = sum(1 / q['rank'] for q in per_question if q['rank']) / n
+    return metrics, per_question
+
+
+def truncation_rate(chunks, model_name):
+    """Share of chunks longer than the model's input limit (the excess is silently dropped)."""
+    model = get_embed_model(model_name)
+    limit = model.max_seq_length
+    too_long = sum(1 for c in chunks if len(model.tokenizer.tokenize(c['text'])) > limit)
+    return too_long / len(chunks)
+
+
+def build_faiss_retriever(chunks, model_name):
+    embeddings = embed_chunks(chunks, model_name)
+    index = build_index(embeddings)
+    return index, (lambda question, k: retrieve(question, index, chunks, model_name, top_k=k))
+
+
+def evaluate_answers(testset, index, chunks):
+    """Keyword check on generated answers: did ANY expected keyword appear?
+
+    A crude baseline - it can't tell a correct answer from one that merely
+    mentions the right words. LLM-judged faithfulness replaces it later.
+    """
+    # Imported here so retrieval-only runs don't need a Groq key.
+    from rag_app import rag_pipeline
+
     hits = 0
-    for test in test_set:
-        # Run your existing retrieval logic
-        results = retrieve(test['question'], index, chunks, model, top_k=3)
-        retrieved_pages = [r['page'] for r in results]
-        
-        # Check if ANY expected page was retrieved
-        if any(p in retrieved_pages for p in test['expected_pages']):
-            hits += 1
-            
-    return hits / len(test_set)  # recall score 0.0 to 1.0
-
-index = faiss.read_index('chunks.index')
-with open('chunks_metadata.pkl', 'rb') as f:
-    chunks = pickle.load(f)
-
-model = SentenceTransformer('all-MiniLM-L6-v2')
-evaluation_score = evaluate_retrieval(TEST_SET, index, chunks, model)
-print(f"Retrieval Evaluation Score: {evaluation_score:.2f}")
-
-def evaluate_answers(test_set, index, chunks):
-    hits = 0
-    for test in test_set:
-        # Run the full end-to-end pipeline (returns answer + retrieved chunks)
+    for test in testset:
         answer, _sources = rag_pipeline(test['question'], index, chunks)
         answer = answer.lower()
-        
-        # Check if ANY of the expected keywords appear in the generated answer
         if any(kw.lower() in answer for kw in test['expected_keywords']):
             hits += 1
-            
-    return hits / len(test_set)  # answer quality score 0.0 to 1.0
+    return hits / len(testset)
 
 
-# Run the end-to-end answer quality evaluation
-generation_score = evaluate_answers(TEST_SET, index, chunks)
-print(f"End-to-End Generation Score: {generation_score * 100:.1f}%")
+def main():
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('--pdf', required=True, help='PDF the test set was written for')
+    parser.add_argument('--models', nargs='+', default=[DEFAULT_EMBED_MODEL], help='embedding models to compare')
+    parser.add_argument('--chunk-size', type=int, default=5, help='sentences per chunk')
+    parser.add_argument('--overlap', type=int, default=1, help='sentences shared between chunks')
+    parser.add_argument('--include-unverified', action='store_true', help='also use LLM-drafted questions not yet reviewed')
+    parser.add_argument('--answers', action='store_true', help=f'also score generated answers with {DEFAULT_EMBED_MODEL} (uses Groq quota)')
+    args = parser.parse_args()
+
+    testset = load_testset(include_unverified=args.include_unverified)
+    chunks = build_pipeline(args.pdf, chunk_size=args.chunk_size, overlap=args.overlap)
+    print(f'{len(testset)} questions, {len(chunks)} chunks from {os.path.basename(args.pdf)}\n')
+
+    runs = []
+    for model_name in args.models:
+        start = time.perf_counter()
+        index, retrieve_fn = build_faiss_retriever(chunks, model_name)
+        index_seconds = time.perf_counter() - start
+
+        metrics, per_question = evaluate_retrieval(testset, retrieve_fn)
+        run = {
+            'model': model_name,
+            **metrics,
+            'truncated_chunks': truncation_rate(chunks, model_name),
+            'index_seconds': index_seconds,
+            'per_question': per_question,
+        }
+        if args.answers and model_name == DEFAULT_EMBED_MODEL:
+            run['answer_keyword_score'] = evaluate_answers(testset, index, chunks)
+        runs.append(run)
+
+    header = ['model', *[f'hit@{k}' for k in KS], 'mrr', 'truncated', 'index time']
+    print('| ' + ' | '.join(header) + ' |')
+    print('|' + '---|' * len(header))
+    for run in runs:
+        row = [run['model'], *[f"{run[f'hit@{k}']:.2f}" for k in KS], f"{run['mrr']:.2f}",
+               f"{run['truncated_chunks']:.0%}", f"{run['index_seconds']:.1f}s"]
+        print('| ' + ' | '.join(row) + ' |')
+
+    for run in runs:
+        if 'answer_keyword_score' in run:
+            print(f"\nAnswer keyword score ({run['model']}): {run['answer_keyword_score']:.0%}")
+
+    # Misses are the most useful output: they show *why* retrieval fails.
+    for run in runs:
+        misses = [q for q in run['per_question'] if q['rank'] is None]
+        if misses:
+            print(f"\nMissed in top {MAX_K} by {run['model']}:")
+            for q in misses:
+                print(f"  - {q['question']}\n    expected pages {q['expected_pages']}, got {q['retrieved_pages']}")
+
+    os.makedirs(RESULTS_DIR, exist_ok=True)
+    out_path = os.path.join(RESULTS_DIR, datetime.now().strftime('%Y%m%d-%H%M%S') + '.json')
+    with open(out_path, 'w', encoding='utf-8') as f:
+        json.dump({'pdf': os.path.basename(args.pdf), 'chunk_size': args.chunk_size, 'overlap': args.overlap,
+                   'questions': len(testset), 'runs': runs}, f, indent=2)
+    print(f'\nSaved {out_path}')
+
+
+if __name__ == '__main__':
+    main()

@@ -17,13 +17,18 @@ if "index" not in st.session_state:
     st.session_state.index = None
 if "chunks" not in st.session_state:
     st.session_state.chunks = None
+if "indexed_file" not in st.session_state:
+    st.session_state.indexed_file = None
 
 # 1. File Uploader
 uploaded_file = st.file_uploader("Upload your research PDF", type=["pdf"])
 
 if uploaded_file:
-    # 2. Process the file only if we haven't already indexed it
-    if st.session_state.index is None:
+    # 2. Process the file only if we haven't already indexed it. Comparing
+    # name + size means uploading a different PDF triggers a fresh index
+    # instead of silently answering from the previous document.
+    file_key = (uploaded_file.name, uploaded_file.size)
+    if st.session_state.indexed_file != file_key:
         with st.spinner("Extracting text and building vector index... This may take a moment."):
             
             # Save the uploaded file to a temporary path for pdfplumber to read
@@ -34,15 +39,17 @@ if uploaded_file:
             try:
                 # Run your data ingestion pipeline
                 # Note: Adjust chunk_size and overlap parameters to match your Phase 5 logic
-                new_chunks = build_pipeline(tmp_file_path, chunk_size=5, overlap=1)
-                
+                new_chunks = build_pipeline(tmp_file_path, chunk_size=5, overlap=1,
+                                            source_name=uploaded_file.name)
+
                 # Embed and build index
                 new_embeddings = embed_chunks(new_chunks)
-                new_index = build_index(new_embeddings, new_chunks)
-                
+                new_index = build_index(new_embeddings)
+
                 # 3. Store results in st.session_state
                 st.session_state.index = new_index
                 st.session_state.chunks = new_chunks
+                st.session_state.indexed_file = file_key
                 
                 st.success("Document successfully processed and indexed!")
             finally:

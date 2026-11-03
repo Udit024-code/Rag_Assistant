@@ -1,8 +1,19 @@
+import logging
 import pdfplumber
 import os
 import nltk
-nltk.download('punkt_tab')
 from nltk.tokenize import sent_tokenize
+
+# Download the sentence tokenizer only if it isn't installed yet, instead of
+# hitting the network on every import.
+try:
+    nltk.data.find('tokenizers/punkt_tab')
+except LookupError:
+    nltk.download('punkt_tab', quiet=True)
+
+# pdfminer (under pdfplumber) logs a warning for every malformed font in a
+# PDF; they are harmless and drown out useful output.
+logging.getLogger('pdfminer').setLevel(logging.ERROR)
 
 def extract_text_by_page(pdf_path):
     pages_data = []
@@ -54,7 +65,10 @@ def chunk_text_sentences(text, max_sentences=5, overlap_sentences=1):
 
 
 
-def build_pipeline(pdf_path, chunk_size, overlap):
+def build_pipeline(pdf_path, chunk_size, overlap, source_name=None):
+    # source_name lets callers record the original filename when pdf_path is
+    # a temporary copy (e.g. a Streamlit upload).
+    source_name = source_name or os.path.basename(pdf_path)
     final_chunks = []
     chunk_id = 0
 
@@ -70,7 +84,7 @@ def build_pipeline(pdf_path, chunk_size, overlap):
             chunk_data = {
                 "chunk_id": chunk_id,
                 "text": chunk,
-                "source": os.path.basename(pdf_path),
+                "source": source_name,
                 "page": page_number,
                 "char_count": len(chunk)
             }
