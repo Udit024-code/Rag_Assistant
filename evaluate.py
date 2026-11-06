@@ -5,10 +5,14 @@ where each question names the document and page(s) that contain its answer.
 Labels are page-level on purpose: they stay valid when the chunking strategy
 changes, so every future pipeline can be scored against the same ground truth.
 
+Every configuration is indexed into a fresh in-memory Qdrant, so evaluation
+runs the same search code as the app without touching the cloud library.
+
 Usage:
-    python evaluate.py                                 # current pipeline (ingest.py)
+    python evaluate.py                                 # current pipeline: hybrid search
+    python evaluate.py --modes dense bm25 hybrid --rerank
+    python evaluate.py --models BAAI/bge-small-en-v1.5 gemini-embedding-2
     python evaluate.py --parser legacy                 # original pdfplumber + sentence windows
-    python evaluate.py --models all-MiniLM-L6-v2 BAAI/bge-small-en-v1.5
     python evaluate.py --chunk-tokens 256 --chunk-overlap 32
     python evaluate.py --answers                       # also score generated answers (uses Groq quota)
 """
@@ -20,8 +24,10 @@ import time
 from datetime import datetime
 
 import ingest
+from embeddings import LocalEmbedder, get_embedder
 from pipeline import DEFAULT_X_TOLERANCE, build_corpus
-from retrieval import DEFAULT_EMBED_MODEL, build_index, embed_chunks, get_embed_model, retrieve
+from rerank import JinaReranker
+from retrieval import DEFAULT_EMBED_MODEL, MODES, HybridIndex, Retriever, connect
 
 TESTSET_PATH = os.path.join('eval', 'testset.json')
 DOCS_DIR = os.path.join('eval', 'docs')
@@ -77,20 +83,19 @@ def evaluate_retrieval(testset, retrieve_fn):
 
 
 def truncation_rate(chunks, model_name):
-    """Share of chunks longer than the model's input limit (the excess is silently dropped)."""
-    model = get_embed_model(model_name)
-    limit = model.max_seq_length
-    too_long = sum(1 for c in chunks if len(model.tokenizer.tokenize(c.get('embed_text', c['text']))) > limit)
+    """Share of chunks longer than a local model's input limit (the excess is silently dropped).
+
+    None for API models, whose 2K-8K token limits are far above our chunk size.
+    """
+    embedder = get_embedder(model_name)
+    if not isinstance(embedder, LocalEmbedder):
+        return None
+    model = embedder.model
+    too_long = sum(1 for c in chunks if len(model.tokenizer.tokenize(embedder.document_text(c))) > model.max_seq_length)
     return too_long / len(chunks)
 
 
-def build_faiss_retriever(chunks, model_name):
-    embeddings = embed_chunks(chunks, model_name)
-    index = build_index(embeddings)
-    return index, (lambda question, k: retrieve(question, index, chunks, model_name, top_k=k))
-
-
-def evaluate_answers(testset, index, chunks):
+def evaluate_answers(testset, retriever):
     """Keyword check on generated answers: did ANY expected keyword appear?
 
     A crude baseline - it can't tell a correct answer from one that merely
@@ -101,7 +106,7 @@ def evaluate_answers(testset, index, chunks):
 
     hits = 0
     for test in testset:
-        answer, _sources = rag_pipeline(test['question'], index, chunks)
+        answer, _sources = rag_pipeline(test['question'], retriever)
         answer = answer.lower()
         if any(kw.lower() in answer for kw in test['expected_keywords']):
             hits += 1
@@ -112,6 +117,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--docs-dir', default=DOCS_DIR, help='folder of PDFs the test set was written for')
     parser.add_argument('--models', nargs='+', default=[DEFAULT_EMBED_MODEL], help='embedding models to compare')
+    parser.add_argument('--modes', nargs='+', default=['hybrid'], choices=MODES, help='search modes to compare')
+    parser.add_argument('--rerank', action='store_true', help='also score each mode with Jina reranking of the top candidates')
     parser.add_argument('--parser', default=None, choices=['legacy', *ingest.PARSERS],
                         help='PDF parser (default: llamaparse if its key is set, else pymupdf); '
                              'legacy = original pdfplumber + sentence-window pipeline')
@@ -122,7 +129,7 @@ def main():
     parser.add_argument('--overlap', type=int, default=1, help='legacy only: sentences shared between chunks')
     parser.add_argument('--x-tolerance', type=float, default=DEFAULT_X_TOLERANCE, help='legacy only: pdfplumber letter-gap tolerance')
     parser.add_argument('--include-unverified', action='store_true', help='also use LLM-drafted questions not yet reviewed')
-    parser.add_argument('--answers', action='store_true', help=f'also score generated answers with {DEFAULT_EMBED_MODEL} (uses Groq quota)')
+    parser.add_argument('--answers', action='store_true', help='also score generated answers for the first configuration (uses Groq quota)')
     args = parser.parse_args()
 
     testset = load_testset(include_unverified=args.include_unverified)
@@ -132,46 +139,59 @@ def main():
     args.parser = args.parser or ingest.default_parser()
     if args.parser == 'legacy':
         chunks = build_corpus(pdf_paths, args.chunk_size, args.overlap, x_tolerance=args.x_tolerance)
+        for c in chunks:
+            c['doc_id'] = c['source']
     else:
         chunks = ingest.ingest_corpus(pdf_paths, args.parser, args.chunk_tokens, args.chunk_overlap,
                                       embed_context=args.embed_context)
     print(f'{len(testset)} questions, {len(chunks)} chunks from {len(pdf_paths)} PDFs (parser: {args.parser})\n')
 
+    reranker = JinaReranker(strict=True) if args.rerank else None
+    client = connect(local=True)
     runs = []
-    for model_name in args.models:
+    for i, model_name in enumerate(args.models):
         start = time.perf_counter()
-        index, retrieve_fn = build_faiss_retriever(chunks, model_name)
+        index = HybridIndex(client, f'eval-{i}', model_name)
+        index.add(chunks)
         index_seconds = time.perf_counter() - start
 
-        metrics, per_question = evaluate_retrieval(testset, retrieve_fn)
-        run = {
-            'model': model_name,
-            **metrics,
-            'truncated_chunks': truncation_rate(chunks, model_name),
-            'index_seconds': index_seconds,
-            'per_question': per_question,
-        }
-        if args.answers and model_name == DEFAULT_EMBED_MODEL:
-            run['answer_keyword_score'] = evaluate_answers(testset, index, chunks)
-        runs.append(run)
+        for mode in args.modes:
+            # BM25 ignores the embedding model, so score it once.
+            if mode == 'bm25' and i > 0:
+                continue
+            for rerank in ([None, reranker] if reranker else [None]):
+                retriever = Retriever(index, mode, rerank)
+                label = ('bm25' if mode == 'bm25' else f'{model_name} {mode}') + (' + rerank' if rerank else '')
+                metrics, per_question = evaluate_retrieval(testset, retriever)
+                run = {
+                    'config': label, 'model': model_name, 'mode': mode, 'rerank': rerank.name if rerank else None,
+                    **metrics,
+                    'truncated_chunks': truncation_rate(chunks, model_name) if mode != 'bm25' else None,
+                    'index_seconds': index_seconds,
+                    'per_question': per_question,
+                }
+                if args.answers and not runs:
+                    run['answer_keyword_score'] = evaluate_answers(testset, retriever)
+                runs.append(run)
 
-    header = ['model', *[f'hit@{k}' for k in KS], 'mrr', 'truncated', 'index time']
+    header = ['config', *[f'hit@{k}' for k in KS], 'mrr', 'truncated', 'index time']
     print('| ' + ' | '.join(header) + ' |')
     print('|' + '---|' * len(header))
     for run in runs:
-        row = [run['model'], *[f"{run[f'hit@{k}']:.2f}" for k in KS], f"{run['mrr']:.2f}",
-               f"{run['truncated_chunks']:.0%}", f"{run['index_seconds']:.1f}s"]
+        truncated = '-' if run['truncated_chunks'] is None else f"{run['truncated_chunks']:.0%}"
+        row = [run['config'], *[f"{run[f'hit@{k}']:.2f}" for k in KS], f"{run['mrr']:.2f}",
+               truncated, f"{run['index_seconds']:.1f}s"]
         print('| ' + ' | '.join(row) + ' |')
 
     for run in runs:
         if 'answer_keyword_score' in run:
-            print(f"\nAnswer keyword score ({run['model']}): {run['answer_keyword_score']:.0%}")
+            print(f"\nAnswer keyword score ({run['config']}): {run['answer_keyword_score']:.0%}")
 
     # Misses are the most useful output: they show *why* retrieval fails.
     for run in runs:
         misses = [q for q in run['per_question'] if q['rank'] is None]
         if misses:
-            print(f"\nMissed in top {MAX_K} by {run['model']}:")
+            print(f"\nMissed in top {MAX_K} by {run['config']}:")
             for q in misses:
                 print(f"  - {q['question']}\n    expected {q['expected']}, got {q['retrieved'][:3]}")
 

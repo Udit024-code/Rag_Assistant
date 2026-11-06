@@ -1,11 +1,13 @@
 streamlit
-faiss-cpu
-sentence-transformers
 pdfplumber
 nltk
 groq
 python-dotenv
 numpy
+requests
 llama-index-core
 pymupdf4llm
 llama-cloud>=2
+qdrant-client
+fastembed
+google-genai

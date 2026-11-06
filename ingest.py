@@ -98,15 +98,20 @@ def default_parser():
     return 'llamaparse' if get_secret('LLAMA_CLOUD_API_KEY') else 'pymupdf'
 
 
+def file_digest(pdf_path):
+    # Identifies a document by content, so re-uploading the same PDF under
+    # another name is recognised as already indexed.
+    with open(pdf_path, 'rb') as f:
+        return hashlib.sha256(f.read()).hexdigest()[:16]
+
+
 def parse_pdf(pdf_path, parser=None):
     """Return [{'page_number', 'markdown'}], cached on disk by file content + parser."""
     parser = parser or default_parser()
     if parser not in PARSERS:
         raise ValueError(f'unknown parser {parser!r}; choose from {PARSERS}')
 
-    with open(pdf_path, 'rb') as f:
-        digest = hashlib.sha256(f.read()).hexdigest()[:16]
-    cache_path = os.path.join(CACHE_DIR, f'{digest}-{parser}.json')
+    cache_path = os.path.join(CACHE_DIR, f'{file_digest(pdf_path)}-{parser}.json')
     if os.path.exists(cache_path):
         with open(cache_path, encoding='utf-8') as f:
             return json.load(f)
@@ -220,6 +225,9 @@ def ingest_pdf(pdf_path, source_name=None, parser=None, chunk_tokens=DEFAULT_CHU
     source_name = source_name or os.path.basename(pdf_path)
     pages = parse_pdf(pdf_path, parser)
     chunks = chunk_pages(pages, source_name, chunk_tokens, chunk_overlap, first_chunk_id, embed_context)
+    doc_id = file_digest(pdf_path)
+    for chunk in chunks:
+        chunk['doc_id'] = doc_id
     return chunks, scanned_pages(pages)
 
 

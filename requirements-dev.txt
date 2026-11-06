@@ -1,0 +1,3 @@
+# Extra packages for evaluation and local embedding models (not needed by the app)
+-r requirements.txt
+sentence-transformers

@@ -1,8 +1,6 @@
 from groq import Groq
 
 from config import get_secret
-# Import retrieval function from your existing retrieval.py file
-from retrieval import retrieve
 
 
 # Initialize the Groq client with a key from either .env or Streamlit secrets
@@ -12,16 +10,17 @@ def build_prompt(question, retrieved_chunks):
 
   system_instruction = (
         "SYSTEM: You are a research assistant. Answer the user's question using ONLY the context provided below.\n"
-        "If the answer is not in the context, say 'I cannot find this information in the provided document.'\n"
-        "Always cite the page number your answer comes from."
+        "If the answer is not in the context, say 'I cannot find this information in the provided documents.'\n"
+        "Always cite the paper and page number your answer comes from."
     )
-  
+
   context_parts = []
   for chunk in retrieved_chunks:
         page_num = chunk["page"]  # Matches ingest.py schema
         chunk_text = chunk["text"] # Matches ingest.py schema
+        paper = chunk.get("paper") or chunk["source"]
         section = f" | {chunk['section']}" if chunk.get("section") else ""
-        context_parts.append(f"[Page {page_num}{section}]:\n{chunk_text}")
+        context_parts.append(f"[{paper}, page {page_num}{section}]:\n{chunk_text}")
 
   # Chunks span several lines (markdown tables), so separate them clearly.
   context_str = "\n\n".join(context_parts)
@@ -59,13 +58,16 @@ def generate_answer(prompt):
         return f"API Error: Failed to generate answer due to: {e}"
     
 
-def rag_pipeline(question, index, chunks):
+def rag_pipeline(question, retriever, k=5, **filters):
     """
-    Step 4: Orchestrates the entire end-to-end RAG system in memory.
+    Step 4: Orchestrates the entire end-to-end RAG system.
+
+    retriever is a retrieval.Retriever (hybrid search + reranking); filters
+    such as owners/doc_ids limit which documents are searched.
     """
-    # 1-2. Retrieve top-3 relevant chunks. retrieval.py caches the embedding
-    # model, so indexing and querying share one loaded copy.
-    retrieved_chunks = retrieve(question, index, chunks, top_k=3)
+    # 1-2. Retrieve the top-k chunks. The reranker keeps these precise, so 5
+    # fit comfortably in Groq's free 8K tokens/minute.
+    retrieved_chunks = retriever(question, k, **filters)
 
     # 3. Build the augmented prompt
     formatted_prompt = build_prompt(question, retrieved_chunks)

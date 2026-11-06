@@ -1,101 +1,174 @@
-import numpy as np
-import faiss
-import pickle
-import os
+"""Hybrid retrieval over Qdrant: dense vectors + BM25, fused with RRF, then reranked.
+
+Each chunk is stored once with two vectors:
+  dense - an embedding of its meaning (finds paraphrases: "how fast" ~ "latency")
+  bm25  - sparse keyword weights (finds exact terms: "CPHS", "MRR@10", "Table 2")
+Qdrant runs both searches and merges them with Reciprocal Rank Fusion, which
+combines rankings rather than raw scores, so the two scales never need tuning.
+A cross-encoder reranker (rerank.py) then reorders the top candidates.
+"""
+import logging
+import re
+import time
+import uuid
 from functools import lru_cache
-from sentence_transformers import SentenceTransformer
-from pipeline import build_pipeline
 
+from qdrant_client import QdrantClient, models
+from qdrant_client.local.qdrant_local import QdrantLocal
 
-# bge-small beat all-MiniLM-L6-v2 on the eval set and reads 512 tokens per
-# chunk instead of 256. Placeholder until the Phase 2 embedding comparison.
-DEFAULT_EMBED_MODEL = 'BAAI/bge-small-en-v1.5'
+from config import get_secret
+from embeddings import get_embedder
 
-# Some embedding models are trained with an instruction prepended to the
-# *query* (never the documents). Leaving it off quietly costs retrieval quality.
-QUERY_PREFIXES = {
-  'BAAI/bge-small-en-v1.5': 'Represent this sentence for searching relevant passages: ',
-  'BAAI/bge-base-en-v1.5': 'Represent this sentence for searching relevant passages: ',
-}
+# Best on the eval set (hybrid: Hit@1 0.91, MRR 0.95 vs 0.76/0.85 for bge-small).
+# Free tier: 100 texts/minute, so uploads embed at ~100 chunks per minute.
+DEFAULT_EMBED_MODEL = 'gemini-embedding-2'
+LIBRARY_OWNER = 'library'   # owner tag of the shared demo documents
+MODES = ('dense', 'bm25', 'hybrid')
+CANDIDATES = 30   # first-stage results handed to the reranker
+
+# Chunk fields stored in Qdrant; embed_text is only needed at indexing time.
+PAYLOAD_FIELDS = ('chunk_id', 'doc_id', 'text', 'source', 'paper', 'section', 'page', 'char_count')
 
 
 @lru_cache(maxsize=None)
-def get_embed_model(name=DEFAULT_EMBED_MODEL):
-  # Loading a model takes seconds, so load each one once and reuse it.
-  return SentenceTransformer(name)
+def get_bm25():
+    from fastembed import SparseTextEmbedding
+    return SparseTextEmbedding('Qdrant/bm25')
 
 
-def embed_chunks(chunks, model_name=DEFAULT_EMBED_MODEL) -> np.ndarray:
-  model = get_embed_model(model_name)
-
-  # embed_text adds the paper title and section heading (see ingest.py);
-  # chunks from the legacy pipeline only have plain text.
-  text_list = [chunk.get("embed_text", chunk["text"]) for chunk in chunks]
-
-  # normalize_embeddings=True gives unit-length vectors, so inner-product
-  # search (IndexFlatIP) behaves as cosine similarity — the standard choice
-  # for text retrieval.
-  embeddings = model.encode(text_list, normalize_embeddings=True)
-
-  return embeddings
+def connect(local=False):
+    """Qdrant Cloud (persistent library), or an in-memory instance for evaluation."""
+    if local:
+        return QdrantClient(':memory:')
+    return QdrantClient(url=get_secret('QDRANT_URL'), api_key=get_secret('QDRANT_API_KEY'), timeout=60)
 
 
-
-def build_index(embeddings):
-  dimension = embeddings.shape[1]
-  # Inner product on normalized vectors == cosine similarity.
-  index = faiss.IndexFlatIP(dimension)
-
-  index.add(embeddings.astype('float32'))
-
-  return index
+def library_collection(embed_model=DEFAULT_EMBED_MODEL):
+    # One collection per embedding model: vectors from different models live
+    # in different spaces (and sizes) and must never be mixed.
+    return 'library-' + re.sub(r'[^a-z0-9]+', '-', embed_model.lower()).strip('-')
 
 
-def save_index(index, chunks, index_path="chunks.index", metadata_path="chunks_metadata.pkl"):
-  # Kept separate from build_index: the Streamlit app keeps the index in
-  # memory per session and must not write shared files on the server.
-  faiss.write_index(index, index_path)
-
-  with open(metadata_path, "wb") as f:
-    pickle.dump(chunks, f)
+def _sparse(embedding):
+    return models.SparseVector(indices=embedding.indices.tolist(), values=embedding.values.tolist())
 
 
-def retrieve(query, index, chunks, model_name=DEFAULT_EMBED_MODEL, top_k=3):
-  model = get_embed_model(model_name)
-  query = QUERY_PREFIXES.get(model_name, '') + query
+def _filter(owners=None, doc_ids=None):
+    conditions = []
+    if owners:
+        conditions.append(models.FieldCondition(key='owner', match=models.MatchAny(any=list(owners))))
+    if doc_ids:
+        conditions.append(models.FieldCondition(key='doc_id', match=models.MatchAny(any=list(doc_ids))))
+    return models.Filter(must=conditions) if conditions else None
 
-  # Normalize the query the same way as the chunks so the inner-product
-  # search measures cosine similarity.
-  query_embedding = model.encode(query, normalize_embeddings=True).astype('float32')
 
-  query_vector = query_embedding.reshape(1, -1)
+class HybridIndex:
+    def __init__(self, client, collection, embed_model=DEFAULT_EMBED_MODEL):
+        self.client = client
+        self.collection = collection
+        self.embedder = get_embedder(embed_model)
 
-  distances, indices = index.search(query_vector, top_k)
+    def ensure_collection(self):
+        if self.client.collection_exists(self.collection):
+            return
+        self.client.create_collection(
+            self.collection,
+            vectors_config={'dense': models.VectorParams(size=self.embedder.dim, distance=models.Distance.COSINE)},
+            # IDF modifier: Qdrant computes BM25's inverse document frequency
+            # from the collection itself, so it stays right as documents are added.
+            sparse_vectors_config={'bm25': models.SparseVectorParams(modifier=models.Modifier.IDF)},
+        )
+        if not isinstance(self.client._client, QdrantLocal):
+            # Indexes let Qdrant Cloud filter by owner/document quickly; the
+            # in-memory instance used for evaluation doesn't support them.
+            for field in ('owner', 'doc_id'):
+                self.client.create_payload_index(self.collection, field, models.PayloadSchemaType.KEYWORD)
+            self.client.create_payload_index(self.collection, 'uploaded_at', models.PayloadSchemaType.FLOAT)
 
-  relevant_chunks = []
-  for idx in indices[0]:
+    def add(self, chunks, owner=LIBRARY_OWNER, batch_size=64, **extra_payload):
+        """Embed and store chunks. owner tags who may search them (see app.py)."""
+        self.ensure_collection()
+        dense = self.embedder.embed_documents(chunks)
+        sparse = list(get_bm25().embed([c.get('embed_text', c['text']) for c in chunks]))
+        points = [
+            models.PointStruct(
+                id=str(uuid.uuid5(uuid.NAMESPACE_URL, f"{c['doc_id']}/{c['chunk_id']}")),
+                vector={'dense': d.tolist(), 'bm25': _sparse(s)},
+                payload={**{k: c[k] for k in PAYLOAD_FIELDS if k in c}, 'owner': owner, **extra_payload},
+            )
+            for c, d, s in zip(chunks, dense, sparse)
+        ]
+        for i in range(0, len(points), batch_size):
+            self.client.upsert(self.collection, points[i:i + batch_size])
 
-    if idx != -1 and idx < len(chunks):
-      relevant_chunks.append(chunks[idx])
+    def has_document(self, doc_id, owners=None):
+        if not self.client.collection_exists(self.collection):
+            return False
+        return self.client.count(self.collection, count_filter=_filter(owners, [doc_id]), exact=True).count > 0
 
-  return relevant_chunks
+    def documents(self, owners=None):
+        """One entry per indexed document: {doc_id, source, paper, owner}."""
+        if not self.client.collection_exists(self.collection):
+            return []
+        docs, offset = {}, None
+        while True:
+            points, offset = self.client.scroll(self.collection, scroll_filter=_filter(owners), limit=256, offset=offset,
+                                                with_payload=['doc_id', 'source', 'paper', 'owner'])
+            for p in points:
+                docs.setdefault(p.payload['doc_id'], p.payload)
+            if offset is None:
+                return list(docs.values())
 
-if __name__ == "__main__":
-    # Everything below this line ONLY runs if you execute retrieval.py directly.
-    # It will NOT run when Phase 4 imports this file!
+    def delete_document(self, doc_id, owner):
+        self._delete(_filter([owner], [doc_id]))
 
-    print("Building pipeline and embedding chunks...")
-    # chunk_size/overlap are counted in sentences, matching the app.
-    chunks = build_pipeline('pdf.pdf', chunk_size=5, overlap=1)
-    embeddings = embed_chunks(chunks)
+    def delete_expired_uploads(self, max_age_hours=24):
+        """Remove visitors' uploads older than max_age_hours; the shared library stays."""
+        self._delete(models.Filter(
+            must=[models.FieldCondition(key='uploaded_at', range=models.Range(lt=time.time() - max_age_hours * 3600))],
+            must_not=[models.FieldCondition(key='owner', match=models.MatchValue(value=LIBRARY_OWNER))],
+        ))
 
-    print("Building and saving FAISS index...")
-    index = build_index(embeddings)
-    save_index(index, chunks)
+    def _delete(self, flt):
+        if self.client.collection_exists(self.collection):
+            self.client.delete(self.collection, points_selector=models.FilterSelector(filter=flt))
 
-    print(f'Index file exists: {os.path.exists("chunks.index")}')
-    print(f'Metadata file exists: {os.path.exists("chunks_metadata.pkl")}')
+    def search(self, query, k, mode='hybrid', owners=None, doc_ids=None):
+        if mode not in MODES:
+            raise ValueError(f'unknown mode {mode!r}; choose from {MODES}')
+        flt = _filter(owners, doc_ids)
+        dense = lambda: models.Prefetch(query=self.embedder.embed_query(query).tolist(), using='dense', limit=k, filter=flt)
+        bm25 = lambda: models.Prefetch(query=_sparse(next(get_bm25().query_embed(query))), using='bm25', limit=k, filter=flt)
 
-    # Verify the load
-    index = faiss.read_index('chunks.index')
-    print(f'Vectors in index: {index.ntotal}')
+        if mode == 'hybrid':
+            try:
+                prefetch = [dense(), bm25()]
+            except Exception as e:
+                # The query embedding comes from an API with a free-tier quota;
+                # keyword search alone still answers most questions.
+                logging.warning('Dense search unavailable, using BM25 only: %s', e)
+                mode, prefetch = 'bm25', None
+        if mode == 'hybrid':
+            result = self.client.query_points(self.collection, prefetch=prefetch,
+                                              query=models.FusionQuery(fusion=models.Fusion.RRF), limit=k)
+        else:
+            single = dense() if mode == 'dense' else bm25()
+            result = self.client.query_points(self.collection, query=single.query, using=single.using,
+                                              query_filter=flt, limit=k)
+        return [{**p.payload, 'score': p.score} for p in result.points]
+
+
+class Retriever:
+    """First-stage search, optionally followed by reranking. Call it like a function."""
+
+    def __init__(self, index, mode='hybrid', reranker=None, candidates=CANDIDATES):
+        self.index = index
+        self.mode = mode
+        self.reranker = reranker
+        self.candidates = candidates
+
+    def __call__(self, query, k, **filters):
+        if not self.reranker:
+            return self.index.search(query, k, self.mode, **filters)
+        candidates = self.index.search(query, max(k, self.candidates), self.mode, **filters)
+        return self.reranker.rerank(query, candidates, k)
