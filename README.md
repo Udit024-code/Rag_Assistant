@@ -79,6 +79,8 @@ If the embedding API is unavailable, search falls back to BM25 + reranking (stil
 │   ├── testset.json         # labelled questions (paper + page)
 │   ├── comparisons.json     # questions needing evidence from 2-3 papers
 │   ├── compare_agent.py     # paper coverage: single search vs the agent
+│   ├── unanswerable.json    # plausible questions the papers don't answer
+│   ├── judge_answers.py     # LLM-judged answer quality
 │   ├── download_docs.py     # fetches the 4 eval papers
 │   ├── generate_testset.py  # drafts questions with an LLM
 │   └── review_app.py        # click-through review of drafted questions
@@ -138,7 +140,9 @@ Retrieval is scored on four public RAG papers (RAG, DPR, ColBERT, BEIR) with a t
 ```bash
 python evaluate.py --models BAAI/bge-small-en-v1.5 gemini-embedding-2 --modes dense bm25 hybrid --rerank
 python evaluate.py --parser legacy    # the original pipeline
-python evaluate.py --answers          # also score generated answers (uses Groq quota)
+python evaluate.py --difficulty hard  # newcomer-phrased questions only
+python eval/compare_agent.py          # paper coverage on comparison questions
+python eval/judge_answers.py          # LLM-judged answer quality, single search vs agent
 ```
 
 `eval/generate_testset.py` drafts more questions with an LLM; each is marked unverified until reviewed by hand.
@@ -153,7 +157,22 @@ python evaluate.py --answers          # also score generated answers (uses Groq 
 | Hybrid (dense + BM25) + reranker | 0.89 | 1.00 | 0.93 |
 | **gemini-embedding-2, hybrid (+ reranker)** | **0.91** | **1.00** | **0.95** |
 
-*Preliminary: 46 LLM-drafted questions, not yet all hand-verified. The top configurations now tie at Hit@5 1.00, so the set is too easy to separate them; harder questions are next.*
+*Standard set: LLM-drafted questions, not yet all hand-verified. The top configurations tie at Hit@5 1.00, so it can no longer separate them; see the hard set below.*
+
+#### Hard questions: phrased the way a newcomer asks
+
+The standard questions reuse 76% of their answer page's content words (median), which flatters keyword search. `generate_testset.py --hard` asks for newcomer phrasing and keeps only questions sharing at most 50% of their words with the page; even when told to paraphrase, gpt-oss-120b passed that filter 15% of the time and Qwen 52%. On 50 such questions (`--difficulty hard`):
+
+| Config | Hit@1 | Hit@5 | MRR (hard) | MRR (standard) |
+|---|---|---|---|---|
+| BM25 | 0.32 | 0.68 | 0.48 | 0.85 |
+| bge-small dense | 0.40 | 0.72 | 0.54 | 0.76 |
+| bge-small hybrid + reranker | 0.68 | 0.98 | 0.81 | 0.93 |
+| gemini-embedding-2 dense | **0.76** | 0.94 | **0.85** | 0.92 |
+| gemini-embedding-2 hybrid | 0.70 | 0.94 | 0.80 | 0.95 |
+| **gemini-embedding-2 hybrid + reranker (the app)** | 0.68 | **1.00** | 0.81 | **0.95** |
+
+Keyword search collapses on paraphrased questions, and on them BM25 even pulls the hybrid's first result down slightly. The app keeps hybrid + reranker because it is the only setup with the right page in the top 5 on both sets (the agent passes several passages to the LLM, so Hit@5 matters more than Hit@1), and because it still works when the embedding API is down. Differences of ~0.04 MRR are about 2 of 50 questions.
 
 Things that did **not** help, kept here because they shaped the design:
 - **Bigger chunks** (384-512 tokens): small embedding models squeeze a whole chunk into one vector, and longer chunks blur it (Hit@5 fell to ~0.70).
@@ -172,13 +191,29 @@ The test set above only has single-page questions. `eval/compare_agent.py` score
 
 The Phase 2 app answered "ColBERT vs DPR" from ColBERT passages alone and made up DPR's half; most of that was the top-5 cut. At an equal 10-passage budget, single search already reaches every paper, and the agent's gain is balance: ~60% more evidence for the weakest side of each comparison. Its other benefits (follow-up rewriting, skipping search for small talk, a second round when evidence is missing) cost two small LLM calls per question.
 
+### Answer quality, judged by an LLM
+
+Retrieval scores don't show what users read. `eval/judge_answers.py` generates answers for 26 questions (10 hard, 10 comparisons, 6 **unanswerable**: plausible questions the papers don't answer, e.g. "What results does ColBERT report on Natural Questions?", where DPR does) and has a judge from another model family (Qwen 3.8 27B; the answers come from gpt-oss) split each answer into claims and check every claim against the passages that system retrieved.
+
+| System | Faithfulness | Citation accuracy | Correct (hard) | Complete (comparisons) | Declines unanswerable | Gives up on answerable |
+|---|---|---|---|---|---|---|
+| Phase 2: single search, top 5, gpt-oss-20b | 0.91 | – | 0.70 | 0.55 | 5/6 | 5/20 |
+| **Phase 3: agent, gpt-oss-120b** | **0.94** | **0.94** | **0.85** | **1.00** | **6/6** | **0/20** |
+
+- *Faithfulness*: share of claims supported by the retrieved passages. *Citation accuracy*: share of cited claims whose cited passage supports them. *Gives up*: answers nothing even though the documents contain the answer (saying one part is missing is fine).
+- The two systems differ in both architecture and answer model, so this measures the whole upgrade, not the agent alone.
+- Checking the judge: the agent's lowest-scoring answer quoted real numbers under the wrong labels: ColBERT's MS MARCO score (0.401) presented as its BEIR average, and a 0.884 from a 12-column recall table whose headers the parser had shifted, credited to the wrong model. The judge was right. **Misreading wide tables is the main remaining failure mode**, rather than invented facts.
+- Building this evaluation found two agent bugs, both fixed: the planner skipped searching for a real question that merely sounded off-topic (one of BEIR's example queries is about Game of Thrones), and gpt-oss could spend its whole token budget reasoning and return empty JSON, which would crash a request.
+- Small sample (26 questions × 2 systems) and one judge; useful for direction, not decimals.
+
 ---
 
 ## Possible improvements
 
-- LLM-judged answer faithfulness and citation accuracy in the evaluation
-- Harder, hand-verified questions (the current set saturates at Hit@5 1.00)
-- Highlighting the exact sentence each citation supports
+- Keep table headers attached to every row when chunking wide tables (the main remaining error)
+- Hand-verify the test sets (the review app in `eval/review_app.py` makes it a click per question)
+- Run the single-search pipeline with gpt-oss-120b too, to separate the agent's effect from the bigger model's
+- Weighted fusion that leans on dense search for paraphrased questions
 
 ---
 
