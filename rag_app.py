@@ -1,29 +1,12 @@
-import os
 from groq import Groq
-from dotenv import load_dotenv
 
+from config import get_secret
 # Import retrieval function from your existing retrieval.py file
 from retrieval import retrieve
 
-# Load environment variables from .env file (used when running locally)
-load_dotenv()
-
-
-def _get_groq_api_key():
-    """Read the Groq API key from the environment (.env locally) or,
-    when deployed on Streamlit Cloud, from st.secrets."""
-    api_key = os.getenv("GROQ_API_KEY")
-    if not api_key:
-        try:
-            import streamlit as st
-            api_key = st.secrets["GROQ_API_KEY"]
-        except Exception:
-            pass
-    return api_key
-
 
 # Initialize the Groq client with a key from either .env or Streamlit secrets
-client = Groq(api_key=_get_groq_api_key())
+client = Groq(api_key=get_secret("GROQ_API_KEY"))
 
 def build_prompt(question, retrieved_chunks):
 
@@ -35,11 +18,13 @@ def build_prompt(question, retrieved_chunks):
   
   context_parts = []
   for chunk in retrieved_chunks:
-        page_num = chunk["page"]  # Matches pipeline.py schema
-        chunk_text = chunk["text"] # Matches pipeline.py schema
-        context_parts.append(f"[Page {page_num}]: {chunk_text}")
+        page_num = chunk["page"]  # Matches ingest.py schema
+        chunk_text = chunk["text"] # Matches ingest.py schema
+        section = f" | {chunk['section']}" if chunk.get("section") else ""
+        context_parts.append(f"[Page {page_num}{section}]:\n{chunk_text}")
 
-  context_str = "\n".join(context_parts)
+  # Chunks span several lines (markdown tables), so separate them clearly.
+  context_str = "\n\n".join(context_parts)
 
   prompt = (
         f"{system_instruction}\n\n"

@@ -14,7 +14,7 @@
     ],
     "reference_answer": "Nine tasks are included; examples are fact checking, citation prediction, and duplicate question retrieval.",
     "origin": "llm-draft:openai/gpt-oss-120b",
-    "verified": false
+    "verified": true
   },
   {
     "question": "What is the range of average query lengths across the BEIR datasets?",
@@ -30,7 +30,7 @@
     ],
     "reference_answer": "The average query length varies between 3 and 192 words.",
     "origin": "llm-draft:openai/gpt-oss-120b",
-    "verified": false
+    "verified": true
   },
   {
     "question": "Which dense retrieval model showed the largest increase in nDCG@10 after adding the missing relevance judgments on TREC‑COVID?",
@@ -46,7 +46,7 @@
     ],
     "reference_answer": "ColBERT improved by 5.8 points, from 0.677 to 0.735.",
     "origin": "llm-draft:openai/gpt-oss-120b",
-    "verified": false
+    "verified": true
   },
   {
     "question": "What is the Hole@10 percentage for the BM25 baseline on the TREC‑COVID dataset?",

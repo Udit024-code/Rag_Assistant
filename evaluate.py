@@ -6,9 +6,10 @@ Labels are page-level on purpose: they stay valid when the chunking strategy
 changes, so every future pipeline can be scored against the same ground truth.
 
 Usage:
-    python evaluate.py
+    python evaluate.py                                 # current pipeline (ingest.py)
+    python evaluate.py --parser legacy                 # original pdfplumber + sentence windows
     python evaluate.py --models all-MiniLM-L6-v2 BAAI/bge-small-en-v1.5
-    python evaluate.py --x-tolerance 1.5               # fixed PDF word spacing
+    python evaluate.py --chunk-tokens 256 --chunk-overlap 32
     python evaluate.py --answers                       # also score generated answers (uses Groq quota)
 """
 import argparse
@@ -18,6 +19,7 @@ import os
 import time
 from datetime import datetime
 
+import ingest
 from pipeline import DEFAULT_X_TOLERANCE, build_corpus
 from retrieval import DEFAULT_EMBED_MODEL, build_index, embed_chunks, get_embed_model, retrieve
 
@@ -78,7 +80,7 @@ def truncation_rate(chunks, model_name):
     """Share of chunks longer than the model's input limit (the excess is silently dropped)."""
     model = get_embed_model(model_name)
     limit = model.max_seq_length
-    too_long = sum(1 for c in chunks if len(model.tokenizer.tokenize(c['text'])) > limit)
+    too_long = sum(1 for c in chunks if len(model.tokenizer.tokenize(c.get('embed_text', c['text']))) > limit)
     return too_long / len(chunks)
 
 
@@ -110,9 +112,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--docs-dir', default=DOCS_DIR, help='folder of PDFs the test set was written for')
     parser.add_argument('--models', nargs='+', default=[DEFAULT_EMBED_MODEL], help='embedding models to compare')
-    parser.add_argument('--chunk-size', type=int, default=5, help='sentences per chunk')
-    parser.add_argument('--overlap', type=int, default=1, help='sentences shared between chunks')
-    parser.add_argument('--x-tolerance', type=float, default=DEFAULT_X_TOLERANCE, help='pdfplumber letter-gap tolerance')
+    parser.add_argument('--parser', default=None, choices=['legacy', *ingest.PARSERS],
+                        help='PDF parser (default: llamaparse if its key is set, else pymupdf); '
+                             'legacy = original pdfplumber + sentence-window pipeline')
+    parser.add_argument('--chunk-tokens', type=int, default=ingest.DEFAULT_CHUNK_TOKENS, help='max tokens per chunk')
+    parser.add_argument('--chunk-overlap', type=int, default=ingest.DEFAULT_CHUNK_OVERLAP, help='tokens shared between chunks')
+    parser.add_argument('--embed-context', action='store_true', help='prepend the paper/section header to embedded text')
+    parser.add_argument('--chunk-size', type=int, default=5, help='legacy only: sentences per chunk')
+    parser.add_argument('--overlap', type=int, default=1, help='legacy only: sentences shared between chunks')
+    parser.add_argument('--x-tolerance', type=float, default=DEFAULT_X_TOLERANCE, help='legacy only: pdfplumber letter-gap tolerance')
     parser.add_argument('--include-unverified', action='store_true', help='also use LLM-drafted questions not yet reviewed')
     parser.add_argument('--answers', action='store_true', help=f'also score generated answers with {DEFAULT_EMBED_MODEL} (uses Groq quota)')
     args = parser.parse_args()
@@ -121,8 +129,13 @@ def main():
     if not testset:
         raise SystemExit('No verified questions yet - review eval/testset.json or pass --include-unverified.')
     pdf_paths = sorted(glob.glob(os.path.join(args.docs_dir, '*.pdf')))
-    chunks = build_corpus(pdf_paths, args.chunk_size, args.overlap, x_tolerance=args.x_tolerance)
-    print(f'{len(testset)} questions, {len(chunks)} chunks from {len(pdf_paths)} PDFs\n')
+    args.parser = args.parser or ingest.default_parser()
+    if args.parser == 'legacy':
+        chunks = build_corpus(pdf_paths, args.chunk_size, args.overlap, x_tolerance=args.x_tolerance)
+    else:
+        chunks = ingest.ingest_corpus(pdf_paths, args.parser, args.chunk_tokens, args.chunk_overlap,
+                                      embed_context=args.embed_context)
+    print(f'{len(testset)} questions, {len(chunks)} chunks from {len(pdf_paths)} PDFs (parser: {args.parser})\n')
 
     runs = []
     for model_name in args.models:
@@ -165,8 +178,11 @@ def main():
     os.makedirs(RESULTS_DIR, exist_ok=True)
     out_path = os.path.join(RESULTS_DIR, datetime.now().strftime('%Y%m%d-%H%M%S') + '.json')
     with open(out_path, 'w', encoding='utf-8') as f:
-        json.dump({'docs': [os.path.basename(p) for p in pdf_paths], 'chunk_size': args.chunk_size,
-                   'overlap': args.overlap, 'x_tolerance': args.x_tolerance,
+        settings = ({'chunk_size': args.chunk_size, 'overlap': args.overlap, 'x_tolerance': args.x_tolerance}
+                    if args.parser == 'legacy' else
+                    {'chunk_tokens': args.chunk_tokens, 'chunk_overlap': args.chunk_overlap,
+                     'embed_context': args.embed_context})
+        json.dump({'docs': [os.path.basename(p) for p in pdf_paths], 'parser': args.parser, **settings,
                    'questions': len(testset), 'include_unverified': args.include_unverified,
                    'runs': runs}, f, indent=2)
     print(f'\nSaved {out_path}')

@@ -9,7 +9,7 @@ A Retrieval-Augmented Generation (RAG) app that lets you **upload a PDF and ask 
 ## What it does
 
 1. You upload a research PDF.
-2. The app extracts the text, splits it into overlapping chunks, and embeds each chunk into a vector index.
+2. The app parses it into markdown (tables included, OCR for scanned pages), splits it into chunks along the paper's own sections, and embeds each chunk into a vector index.
 3. You ask a question; the app finds the most semantically relevant chunks.
 4. An LLM answers **using only those chunks**, and cites the page number. If the answer isn't in the document, it says so instead of guessing.
 
@@ -21,8 +21,10 @@ The system has two phases:
 
 **Indexing (once per document)**
 ```
-PDF → extract text per page → chunk into overlapping sentence windows
-    → embed each chunk → store vectors in FAISS + metadata in a pickle
+PDF → parse to per-page markdown (LlamaParse, or local pymupdf4llm)
+    → split at headings, tracking the section path across pages
+    → ~192-token chunks tagged with paper, section and page
+    → embed each chunk → FAISS index in memory
 ```
 
 **Query (per question)**
@@ -37,11 +39,11 @@ question → embed → FAISS similarity search (top-k) → build augmented promp
 
 | Component | Choice | Why |
 |---|---|---|
-| PDF extraction | `pdfplumber` | Reliable page-level text extraction |
-| Chunking | `NLTK` sentence tokenizer | Sentence-aware chunks stay semantically coherent |
-| Embeddings | `all-MiniLM-L6-v2` (384-dim) | Small, fast, strong quality/size trade-off; runs on CPU |
+| PDF parsing | **LlamaParse** (`llama-cloud`), fallback `pymupdf4llm` | Markdown tables and headings; LlamaParse also OCRs scanned pages |
+| Chunking | Heading-aware sections + LlamaIndex `SentenceSplitter` (192 tokens) | Chunks never mix sections; each knows its paper and section for citations |
+| Embeddings | `BAAI/bge-small-en-v1.5` (384-dim) | Beat MiniLM on the eval set and reads 512 tokens instead of 256; runs on CPU |
 | Vector search | `FAISS` (`IndexFlatIP`, cosine) | Exact nearest-neighbor search; cosine similarity on normalized vectors |
-| LLM | `Llama 3.1 8B` via **Groq** | Very fast inference with a free tier |
+| LLM | `gpt-oss-20b` via **Groq** | Fast inference with a free tier |
 | UI | `Streamlit` | Quickest path to a shareable web app |
 
 ---
@@ -50,10 +52,17 @@ question → embed → FAISS similarity search (top-k) → build augmented promp
 
 ```
 ├── app.py          # Streamlit UI — upload, index, ask
-├── pipeline.py     # PDF extraction + sentence-window chunking
+├── ingest.py       # PDF parsing (LlamaParse / pymupdf4llm) + section-aware chunking
+├── pipeline.py     # Original pdfplumber + sentence-window pipeline (baseline)
 ├── retrieval.py    # Embeddings, FAISS index build, similarity search
 ├── rag_app.py      # Prompt construction + LLM answer generation
-├── evaluate.py     # Retrieval recall & answer-quality evaluation
+├── config.py       # API keys from .env or Streamlit secrets
+├── evaluate.py     # Retrieval evaluation harness (Hit@k, MRR)
+├── eval/
+│   ├── testset.json         # labelled questions (paper + page)
+│   ├── download_docs.py     # fetches the 4 eval papers
+│   ├── generate_testset.py  # drafts questions with an LLM
+│   └── review_app.py        # click-through review of drafted questions
 └── requirements.txt
 ```
 
@@ -68,12 +77,13 @@ cd Rag_Assistant
 pip install -r requirements.txt
 ```
 
-### 2. Add your Groq API key
+### 2. Add your API keys
 Create a `.env` file in the project root:
 ```
 GROQ_API_KEY=your_key_here
+LLAMA_CLOUD_API_KEY=your_key_here   # optional: LlamaParse parsing + OCR
 ```
-Get a free key at [console.groq.com](https://console.groq.com). The `.env` file is gitignored and never committed.
+Get free keys at [console.groq.com](https://console.groq.com) and [cloud.llamaindex.ai](https://cloud.llamaindex.ai). Without a LlamaCloud key the app parses locally with `pymupdf4llm` (slower, no OCR). The `.env` file is gitignored and never committed.
 
 ### 3. Run the app
 ```bash
@@ -115,8 +125,14 @@ python evaluate.py --answers          # also score generated answers (uses Groq 
 |---|---|---|
 | Baseline (MiniLM, pdfplumber defaults) | 0.52 | 0.40 |
 | Fix PDF word spacing (`x_tolerance=1.5`) | 0.78 | 0.65 |
+| Switch embeddings to bge-small | 0.85 | 0.66 |
+| LlamaParse + section-aware 192-token chunks | **0.89** | **0.76** |
 
-*Preliminary: 46 LLM-drafted questions, not yet hand-verified.*
+*Preliminary: 46 LLM-drafted questions, not yet all hand-verified.*
+
+Things that did **not** help, kept here because they shaped the design:
+- **Bigger chunks** (384-512 tokens): small embedding models squeeze a whole chunk into one vector, and longer chunks blur it (Hit@5 fell to ~0.70).
+- **Prepending "paper: ... section: ..." to the embedded text**: lower in all five pairings tested; the shared title words make one paper's chunks look alike. Still recorded per chunk for citations and the LLM prompt.
 
 ---
 

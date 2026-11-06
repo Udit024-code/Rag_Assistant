@@ -6,3 +6,6 @@ nltk
 groq
 python-dotenv
 numpy
+llama-index-core
+pymupdf4llm
+llama-cloud>=2

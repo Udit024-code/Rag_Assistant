@@ -3,8 +3,8 @@ import tempfile
 import os
 
 # Import your production pipeline functions
-from rag_app import rag_pipeline 
-from pipeline import build_pipeline
+from rag_app import rag_pipeline
+from ingest import default_parser, ingest_pdf
 from retrieval import embed_chunks, build_index
 
 # App title and description
@@ -29,18 +29,23 @@ if uploaded_file:
     # instead of silently answering from the previous document.
     file_key = (uploaded_file.name, uploaded_file.size)
     if st.session_state.indexed_file != file_key:
-        with st.spinner("Extracting text and building vector index... This may take a moment."):
-            
-            # Save the uploaded file to a temporary path for pdfplumber to read
+        parser = default_parser()
+        # The local layout parser takes a few seconds per page on CPU.
+        wait_hint = "" if parser == "llamaparse" else " Local parsing takes a few seconds per page."
+        with st.spinner(f"Parsing the PDF ({parser}) and building the vector index...{wait_hint}"):
+
+            # Save the uploaded file to a temporary path for the parser to read
             with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
                 tmp_file.write(uploaded_file.getvalue())
                 tmp_file_path = tmp_file.name
-            
+
             try:
-                # Run your data ingestion pipeline
-                # Note: Adjust chunk_size and overlap parameters to match your Phase 5 logic
-                new_chunks = build_pipeline(tmp_file_path, chunk_size=5, overlap=1,
-                                            source_name=uploaded_file.name)
+                # Run the ingestion pipeline: parse -> section-aware chunks
+                new_chunks, scanned = ingest_pdf(tmp_file_path, source_name=uploaded_file.name, parser=parser)
+                if not new_chunks:
+                    st.error("No text could be extracted from this PDF. If it is a scanned document, "
+                             "set LLAMA_CLOUD_API_KEY so it can be read with OCR.")
+                    st.stop()
 
                 # Embed and build index
                 new_embeddings = embed_chunks(new_chunks)
@@ -50,8 +55,12 @@ if uploaded_file:
                 st.session_state.index = new_index
                 st.session_state.chunks = new_chunks
                 st.session_state.indexed_file = file_key
-                
-                st.success("Document successfully processed and indexed!")
+
+                st.success(f"Document indexed: {len(new_chunks)} chunks.")
+                if scanned:
+                    # Image-only pages have no text layer; only LlamaParse runs OCR.
+                    st.warning(f"Pages {', '.join(map(str, scanned))} look scanned (no text found) and were skipped. "
+                               "Set LLAMA_CLOUD_API_KEY to read them with OCR.")
             finally:
                 # Clean up the temporary file so we don't leak storage
                 os.remove(tmp_file_path)
@@ -83,7 +92,9 @@ if uploaded_file:
                         # so the user can verify it against the original document.
                         with st.expander(f"📄 Sources ({len(sources)} chunks retrieved)"):
                             for i, chunk in enumerate(sources, start=1):
-                                st.markdown(f"**{i}. Page {chunk['page']}**")
-                                st.caption(chunk["text"])
+                                section = f" · {chunk['section']}" if chunk.get("section") else ""
+                                st.markdown(f"**{i}. Page {chunk['page']}**{section}")
+                                # Chunks are markdown, so tables render as tables.
+                                st.markdown(chunk["text"])
                     except Exception as e:
                         st.error(f"An error occurred during execution: {e}")

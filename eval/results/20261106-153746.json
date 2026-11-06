@@ -1,0 +1,1602 @@
+{
+  "docs": [
+    "beir_thakur2021.pdf",
+    "colbert_khattab2020.pdf",
+    "dpr_karpukhin2020.pdf",
+    "rag_lewis2020.pdf"
+  ],
+  "parser": "llamaparse",
+  "chunk_tokens": 192,
+  "chunk_overlap": 24,
+  "embed_context": false,
+  "questions": 46,
+  "include_unverified": true,
+  "runs": [
+    {
+      "model": "all-MiniLM-L6-v2",
+      "hit@1": 0.5,
+      "hit@3": 0.6956521739130435,
+      "hit@5": 0.7608695652173914,
+      "mrr": 0.6250258799171843,
+      "truncated_chunks": 0.0,
+      "index_seconds": 29.468792699975893,
+      "per_question": [
+        {
+          "question": "How many distinct retrieval tasks are included in the BEIR benchmark and can you name three of them?",
+          "expected": "beir_thakur2021.pdf p[2]",
+          "retrieved": [
+            "beir_thakur2021.pdf p4",
+            "beir_thakur2021.pdf p3",
+            "beir_thakur2021.pdf p17",
+            "beir_thakur2021.pdf p18",
+            "beir_thakur2021.pdf p2",
+            "beir_thakur2021.pdf p17",
+            "beir_thakur2021.pdf p17",
+            "beir_thakur2021.pdf p2",
+            "beir_thakur2021.pdf p24",
+            "dpr_karpukhin2020.pdf p5"
+          ],
+          "rank": 5
+        },
+        {
+          "question": "What is the range of average query lengths across the BEIR datasets?",
+          "expected": "beir_thakur2021.pdf p[2]",
+          "retrieved": [
+            "beir_thakur2021.pdf p8",
+            "beir_thakur2021.pdf p22",
+            "beir_thakur2021.pdf p5",
+            "beir_thakur2021.pdf p4",
+            "beir_thakur2021.pdf p4",
+            "beir_thakur2021.pdf p4",
+            "beir_thakur2021.pdf p17",
+            "rag_lewis2020.pdf p4",
+            "beir_thakur2021.pdf p18",
+            "beir_thakur2021.pdf p7"
+          ],
+          "rank": null
+        },
+        {
+          "question": "Which dense retrieval model showed the largest increase in nDCG@10 after adding the missing relevance judgments on TREC\u2011COVID?",
+          "expected": "beir_thakur2021.pdf p[9]",
+          "retrieved": [
+            "beir_thakur2021.pdf p9",
+            "beir_thakur2021.pdf p9",
+            "beir_thakur2021.pdf p24",
+            "beir_thakur2021.pdf p9",
+            "beir_thakur2021.pdf p9",
+            "beir_thakur2021.pdf p2",
+            "beir_thakur2021.pdf p7",
+            "beir_thakur2021.pdf p21",
+            "beir_thakur2021.pdf p7",
+            "beir_thakur2021.pdf p14"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "What is the Hole@10 percentage for the BM25 baseline on the TREC\u2011COVID dataset?",
+          "expected": "beir_thakur2021.pdf p[9]",
+          "retrieved": [
+            "beir_thakur2021.pdf p9",
+            "beir_thakur2021.pdf p9",
+            "beir_thakur2021.pdf p7",
+            "beir_thakur2021.pdf p7",
+            "beir_thakur2021.pdf p24",
+            "colbert_khattab2020.pdf p8",
+            "beir_thakur2021.pdf p23",
+            "beir_thakur2021.pdf p7",
+            "beir_thakur2021.pdf p24",
+            "dpr_karpukhin2020.pdf p8"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "Which 2020 study introduced a method for task\u2011agnostic compression of pre\u2011trained transformers using deep self\u2011attention distillation?",
+          "expected": "beir_thakur2021.pdf p[14]",
+          "retrieved": [
+            "beir_thakur2021.pdf p14",
+            "rag_lewis2020.pdf p11",
+            "rag_lewis2020.pdf p11",
+            "colbert_khattab2020.pdf p3",
+            "rag_lewis2020.pdf p17",
+            "colbert_khattab2020.pdf p10",
+            "rag_lewis2020.pdf p3",
+            "rag_lewis2020.pdf p14",
+            "rag_lewis2020.pdf p9",
+            "beir_thakur2021.pdf p10"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "What is the name of the 2020 open research dataset that aggregates COVID\u201119 literature?",
+          "expected": "beir_thakur2021.pdf p[14]",
+          "retrieved": [
+            "beir_thakur2021.pdf p14",
+            "beir_thakur2021.pdf p23",
+            "beir_thakur2021.pdf p22",
+            "beir_thakur2021.pdf p20",
+            "beir_thakur2021.pdf p18",
+            "beir_thakur2021.pdf p7",
+            "beir_thakur2021.pdf p24",
+            "beir_thakur2021.pdf p22",
+            "beir_thakur2021.pdf p4",
+            "beir_thakur2021.pdf p20"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "Did the authors provide error bars for the experimental results?",
+          "expected": "beir_thakur2021.pdf p[16]",
+          "retrieved": [
+            "dpr_karpukhin2020.pdf p4",
+            "beir_thakur2021.pdf p16",
+            "dpr_karpukhin2020.pdf p8",
+            "dpr_karpukhin2020.pdf p7",
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p2",
+            "dpr_karpukhin2020.pdf p5",
+            "beir_thakur2021.pdf p7",
+            "beir_thakur2021.pdf p16",
+            "beir_thakur2021.pdf p20"
+          ],
+          "rank": 2
+        },
+        {
+          "question": "What information about computational resources was included in the checklist?",
+          "expected": "beir_thakur2021.pdf p[16]",
+          "retrieved": [
+            "beir_thakur2021.pdf p16",
+            "beir_thakur2021.pdf p17",
+            "beir_thakur2021.pdf p18",
+            "dpr_karpukhin2020.pdf p4",
+            "beir_thakur2021.pdf p13",
+            "beir_thakur2021.pdf p22",
+            "beir_thakur2021.pdf p22",
+            "rag_lewis2020.pdf p13",
+            "beir_thakur2021.pdf p12",
+            "beir_thakur2021.pdf p20"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "How many unique queries are in the Quora Duplicate Questions corpus used for evaluation?",
+          "expected": "beir_thakur2021.pdf p[19]",
+          "retrieved": [
+            "beir_thakur2021.pdf p19",
+            "beir_thakur2021.pdf p19",
+            "beir_thakur2021.pdf p4",
+            "beir_thakur2021.pdf p17",
+            "beir_thakur2021.pdf p19",
+            "beir_thakur2021.pdf p18",
+            "beir_thakur2021.pdf p18",
+            "beir_thakur2021.pdf p15",
+            "dpr_karpukhin2020.pdf p4",
+            "dpr_karpukhin2020.pdf p4"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "In the SCIDOCS citation prediction task, how many relevant papers are provided for each query paper?",
+          "expected": "beir_thakur2021.pdf p[19]",
+          "retrieved": [
+            "beir_thakur2021.pdf p19",
+            "beir_thakur2021.pdf p13",
+            "beir_thakur2021.pdf p20",
+            "beir_thakur2021.pdf p4",
+            "beir_thakur2021.pdf p2",
+            "rag_lewis2020.pdf p3",
+            "beir_thakur2021.pdf p17",
+            "beir_thakur2021.pdf p17",
+            "beir_thakur2021.pdf p17",
+            "colbert_khattab2020.pdf p3"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "What speed improvement does ColBERT achieve when used as a re\u2011ranker compared to standard BERT\u2011based models?",
+          "expected": "colbert_khattab2020.pdf p[2]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p2",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p5",
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p6",
+            "colbert_khattab2020.pdf p6",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p7"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "How does ColBERT compute relevance between a query and a document using its late interaction mechanism?",
+          "expected": "colbert_khattab2020.pdf p[2]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p2",
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p5",
+            "colbert_khattab2020.pdf p5",
+            "colbert_khattab2020.pdf p5",
+            "colbert_khattab2020.pdf p7",
+            "beir_thakur2021.pdf p12",
+            "colbert_khattab2020.pdf p2",
+            "colbert_khattab2020.pdf p3"
+          ],
+          "rank": 2
+        },
+        {
+          "question": "What is the reported MRR@10 for the Transformer\u2011Kernel model on the MS MARCO development set?",
+          "expected": "colbert_khattab2020.pdf p[3]",
+          "retrieved": [
+            "beir_thakur2021.pdf p22",
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p3",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p3",
+            "rag_lewis2020.pdf p17",
+            "colbert_khattab2020.pdf p9",
+            "beir_thakur2021.pdf p14",
+            "colbert_khattab2020.pdf p9"
+          ],
+          "rank": 4
+        },
+        {
+          "question": "Which neural ranking model uses a MaxSim\u2011based late interaction mechanism and achieves up to 36% MRR@10 on MS MARCO?",
+          "expected": "colbert_khattab2020.pdf p[3]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p1",
+            "beir_thakur2021.pdf p7",
+            "colbert_khattab2020.pdf p7",
+            "beir_thakur2021.pdf p6",
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p2",
+            "colbert_khattab2020.pdf p2",
+            "rag_lewis2020.pdf p14",
+            "colbert_khattab2020.pdf p3",
+            "colbert_khattab2020.pdf p5"
+          ],
+          "rank": 9
+        },
+        {
+          "question": "What mechanism does ColBERT use to allow BERT to incorporate new or re\u2011weighted query terms during encoding?",
+          "expected": "colbert_khattab2020.pdf p[4]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p2",
+            "colbert_khattab2020.pdf p3",
+            "colbert_khattab2020.pdf p6",
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p2",
+            "colbert_khattab2020.pdf p5",
+            "colbert_khattab2020.pdf p8"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "How does the document encoder reduce the number of embeddings per document before late interaction?",
+          "expected": "colbert_khattab2020.pdf p[4]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p2",
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p9",
+            "beir_thakur2021.pdf p6",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p4",
+            "rag_lewis2020.pdf p4",
+            "colbert_khattab2020.pdf p5"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "Which off\u2011the\u2011shelf library is employed to perform large\u2011scale vector similarity search when indexing document embeddings?",
+          "expected": "colbert_khattab2020.pdf p[5]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p5",
+            "colbert_khattab2020.pdf p6",
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p5",
+            "colbert_khattab2020.pdf p6",
+            "colbert_khattab2020.pdf p6",
+            "dpr_karpukhin2020.pdf p3",
+            "dpr_karpukhin2020.pdf p9",
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p2"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "In what way does ColBERT lower the scoring cost relative to standard BERT rankers?",
+          "expected": "colbert_khattab2020.pdf p[5]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p5",
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p2",
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p6",
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p6",
+            "colbert_khattab2020.pdf p5",
+            "colbert_khattab2020.pdf p9"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "What is the MRR@10 score of the ColBERT end-to-end model on the local evaluation set?",
+          "expected": "colbert_khattab2020.pdf p[7]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p6",
+            "colbert_khattab2020.pdf p9",
+            "beir_thakur2021.pdf p22",
+            "colbert_khattab2020.pdf p6",
+            "colbert_khattab2020.pdf p5",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p7"
+          ],
+          "rank": 7
+        },
+        {
+          "question": "How many FLOPs per query does the BERT large model use, and how does that compare to ColBERT built on BERT base?",
+          "expected": "colbert_khattab2020.pdf p[7]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p2",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p5",
+            "colbert_khattab2020.pdf p5",
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p6",
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p6"
+          ],
+          "rank": 2
+        },
+        {
+          "question": "What is the latency reported for the Anserini BM25 baseline in the full\u2011retrieval experiments?",
+          "expected": "colbert_khattab2020.pdf p[8]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p8",
+            "beir_thakur2021.pdf p8",
+            "dpr_karpukhin2020.pdf p5",
+            "beir_thakur2021.pdf p9",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p9"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "By how many times does BERT's FLOP count exceed ColBERT's when re\u2011ranking the top\u201110 results?",
+          "expected": "colbert_khattab2020.pdf p[8]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p2",
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p5",
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p7"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "What top\u20115 retrieval accuracy does the Dense Passage Retriever achieve compared to BM25?",
+          "expected": "dpr_karpukhin2020.pdf p[2]",
+          "retrieved": [
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p4",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p7",
+            "colbert_khattab2020.pdf p8",
+            "beir_thakur2021.pdf p7",
+            "dpr_karpukhin2020.pdf p8",
+            "beir_thakur2021.pdf p7",
+            "colbert_khattab2020.pdf p8"
+          ],
+          "rank": null
+        },
+        {
+          "question": "How many passages were indexed in the experiments described for the DPR system?",
+          "expected": "dpr_karpukhin2020.pdf p[2]",
+          "retrieved": [
+            "dpr_karpukhin2020.pdf p4",
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p8",
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p5"
+          ],
+          "rank": null
+        },
+        {
+          "question": "What three categories of negative passages are used during training of the dense passage retriever?",
+          "expected": "dpr_karpukhin2020.pdf p[3]",
+          "retrieved": [
+            "dpr_karpukhin2020.pdf p7",
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p4",
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p2",
+            "dpr_karpukhin2020.pdf p3",
+            "dpr_karpukhin2020.pdf p13",
+            "dpr_karpukhin2020.pdf p3"
+          ],
+          "rank": 8
+        },
+        {
+          "question": "How many question\u2011passage pairs are processed in each training batch and what matrix is formed from their embeddings?",
+          "expected": "dpr_karpukhin2020.pdf p[3]",
+          "retrieved": [
+            "dpr_karpukhin2020.pdf p3",
+            "dpr_karpukhin2020.pdf p2",
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p3",
+            "dpr_karpukhin2020.pdf p2",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p7",
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p3",
+            "dpr_karpukhin2020.pdf p7"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "What is the top\u201120 retrieval accuracy of the Dense Passage Retriever on Natural Questions compared with BM25?",
+          "expected": "dpr_karpukhin2020.pdf p[5]",
+          "retrieved": [
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p2",
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p2",
+            "dpr_karpukhin2020.pdf p4",
+            "dpr_karpukhin2020.pdf p7",
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p8"
+          ],
+          "rank": 2
+        },
+        {
+          "question": "How many training epochs are used for large versus small datasets when training the DPR model?",
+          "expected": "dpr_karpukhin2020.pdf p[5]",
+          "retrieved": [
+            "dpr_karpukhin2020.pdf p8",
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p7",
+            "dpr_karpukhin2020.pdf p5",
+            "rag_lewis2020.pdf p19",
+            "dpr_karpukhin2020.pdf p7",
+            "beir_thakur2021.pdf p8"
+          ],
+          "rank": 2
+        },
+        {
+          "question": "Which retrieval approach achieved new state-of-the-art results on several open-domain question answering benchmarks according to the authors?",
+          "expected": "dpr_karpukhin2020.pdf p[9]",
+          "retrieved": [
+            "dpr_karpukhin2020.pdf p9",
+            "dpr_karpukhin2020.pdf p11",
+            "rag_lewis2020.pdf p4",
+            "dpr_karpukhin2020.pdf p1",
+            "dpr_karpukhin2020.pdf p11",
+            "rag_lewis2020.pdf p12",
+            "beir_thakur2021.pdf p18",
+            "beir_thakur2021.pdf p13",
+            "beir_thakur2021.pdf p12",
+            "rag_lewis2020.pdf p8"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "What alternative to the dual\u2011encoder framework is described, and what component does it add to BERT encoders?",
+          "expected": "dpr_karpukhin2020.pdf p[9]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p6",
+            "dpr_karpukhin2020.pdf p3",
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p2",
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p3"
+          ],
+          "rank": null
+        },
+        {
+          "question": "Which 2014 study introduced Asymmetric Locality Sensitive Hashing for sublinear time maximum inner product search?",
+          "expected": "dpr_karpukhin2020.pdf p[11]",
+          "retrieved": [
+            "rag_lewis2020.pdf p3",
+            "colbert_khattab2020.pdf p5",
+            "colbert_khattab2020.pdf p10",
+            "colbert_khattab2020.pdf p8",
+            "dpr_karpukhin2020.pdf p11",
+            "dpr_karpukhin2020.pdf p3",
+            "rag_lewis2020.pdf p17",
+            "colbert_khattab2020.pdf p5",
+            "colbert_khattab2020.pdf p4",
+            "dpr_karpukhin2020.pdf p3"
+          ],
+          "rank": 5
+        },
+        {
+          "question": "What is the title of the 2020 paper that examines the amount of knowledge that can be stored in language model parameters?",
+          "expected": "dpr_karpukhin2020.pdf p[11]",
+          "retrieved": [
+            "rag_lewis2020.pdf p14",
+            "dpr_karpukhin2020.pdf p11",
+            "rag_lewis2020.pdf p14",
+            "dpr_karpukhin2020.pdf p11",
+            "rag_lewis2020.pdf p1",
+            "rag_lewis2020.pdf p14",
+            "rag_lewis2020.pdf p18",
+            "rag_lewis2020.pdf p14",
+            "beir_thakur2021.pdf p11",
+            "rag_lewis2020.pdf p1"
+          ],
+          "rank": 2
+        },
+        {
+          "question": "What is the Top\u20111 retrieval accuracy of the DPR model when it is trained using natural gold passages on the Natural Questions development set?",
+          "expected": "dpr_karpukhin2020.pdf p[12]",
+          "retrieved": [
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p8",
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p13",
+            "dpr_karpukhin2020.pdf p5"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "What margin value is used for the triplet loss in the experiments on Natural Questions?",
+          "expected": "dpr_karpukhin2020.pdf p[12]",
+          "retrieved": [
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p7",
+            "rag_lewis2020.pdf p12",
+            "dpr_karpukhin2020.pdf p2",
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p6"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "Which pre\u2011trained models are used for the retriever and generator in the Retrieval\u2011Augmented Generation approach?",
+          "expected": "rag_lewis2020.pdf p[2]",
+          "retrieved": [
+            "rag_lewis2020.pdf p9",
+            "rag_lewis2020.pdf p2",
+            "rag_lewis2020.pdf p12",
+            "rag_lewis2020.pdf p1",
+            "rag_lewis2020.pdf p3",
+            "dpr_karpukhin2020.pdf p9",
+            "rag_lewis2020.pdf p19",
+            "rag_lewis2020.pdf p9",
+            "rag_lewis2020.pdf p2",
+            "rag_lewis2020.pdf p7"
+          ],
+          "rank": 2
+        },
+        {
+          "question": "On which knowledge\u2011intensive benchmark datasets does the RAG model achieve state\u2011of\u2011the\u2011art performance?",
+          "expected": "rag_lewis2020.pdf p[2]",
+          "retrieved": [
+            "rag_lewis2020.pdf p6",
+            "rag_lewis2020.pdf p8",
+            "rag_lewis2020.pdf p6",
+            "rag_lewis2020.pdf p17",
+            "rag_lewis2020.pdf p10",
+            "rag_lewis2020.pdf p5",
+            "rag_lewis2020.pdf p6",
+            "rag_lewis2020.pdf p18",
+            "rag_lewis2020.pdf p2",
+            "rag_lewis2020.pdf p17"
+          ],
+          "rank": 9
+        },
+        {
+          "question": "What metric is used to evaluate the quality of generated Jeopardy questions and why is it preferred over standard BLEU?",
+          "expected": "rag_lewis2020.pdf p[5]",
+          "retrieved": [
+            "rag_lewis2020.pdf p6",
+            "rag_lewis2020.pdf p5",
+            "rag_lewis2020.pdf p8",
+            "dpr_karpukhin2020.pdf p6",
+            "colbert_khattab2020.pdf p6",
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p5",
+            "rag_lewis2020.pdf p5",
+            "rag_lewis2020.pdf p13",
+            "rag_lewis2020.pdf p2"
+          ],
+          "rank": 2
+        },
+        {
+          "question": "How does the RAG model handle the FEVER fact verification task without using evidence supervision?",
+          "expected": "rag_lewis2020.pdf p[5]",
+          "retrieved": [
+            "rag_lewis2020.pdf p5",
+            "rag_lewis2020.pdf p7",
+            "rag_lewis2020.pdf p5",
+            "rag_lewis2020.pdf p8",
+            "rag_lewis2020.pdf p18",
+            "rag_lewis2020.pdf p6",
+            "rag_lewis2020.pdf p6",
+            "beir_thakur2021.pdf p20",
+            "rag_lewis2020.pdf p7",
+            "rag_lewis2020.pdf p6"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "What advantage does grounding the model in Wikipedia provide regarding the factual accuracy of its outputs?",
+          "expected": "rag_lewis2020.pdf p[10]",
+          "retrieved": [
+            "rag_lewis2020.pdf p14",
+            "rag_lewis2020.pdf p10",
+            "dpr_karpukhin2020.pdf p5",
+            "rag_lewis2020.pdf p6",
+            "dpr_karpukhin2020.pdf p8",
+            "rag_lewis2020.pdf p5",
+            "dpr_karpukhin2020.pdf p5",
+            "rag_lewis2020.pdf p6",
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p8"
+          ],
+          "rank": 2
+        },
+        {
+          "question": "Which types of harmful content could the RAG model potentially be misused to generate, similar to concerns with GPT\u20112?",
+          "expected": "rag_lewis2020.pdf p[10]",
+          "retrieved": [
+            "rag_lewis2020.pdf p10",
+            "rag_lewis2020.pdf p10",
+            "rag_lewis2020.pdf p6",
+            "rag_lewis2020.pdf p10",
+            "rag_lewis2020.pdf p2",
+            "rag_lewis2020.pdf p7",
+            "rag_lewis2020.pdf p6",
+            "rag_lewis2020.pdf p17",
+            "rag_lewis2020.pdf p7",
+            "rag_lewis2020.pdf p2"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "Which 2020 work proposed the Retrieval\u2011augmented Language Model (REALM) and who are the authors?",
+          "expected": "rag_lewis2020.pdf p[12]",
+          "retrieved": [
+            "rag_lewis2020.pdf p12",
+            "rag_lewis2020.pdf p1",
+            "dpr_karpukhin2020.pdf p10",
+            "dpr_karpukhin2020.pdf p8",
+            "rag_lewis2020.pdf p5",
+            "colbert_khattab2020.pdf p10",
+            "beir_thakur2021.pdf p10",
+            "beir_thakur2021.pdf p17",
+            "colbert_khattab2020.pdf p10",
+            "dpr_karpukhin2020.pdf p11"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "What optimization algorithm is referenced for stochastic optimization and in which year was it published?",
+          "expected": "rag_lewis2020.pdf p[12]",
+          "retrieved": [
+            "rag_lewis2020.pdf p12",
+            "rag_lewis2020.pdf p12",
+            "colbert_khattab2020.pdf p10",
+            "rag_lewis2020.pdf p11",
+            "colbert_khattab2020.pdf p10",
+            "rag_lewis2020.pdf p14",
+            "beir_thakur2021.pdf p13",
+            "rag_lewis2020.pdf p3",
+            "rag_lewis2020.pdf p13",
+            "rag_lewis2020.pdf p4"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "What dataset is introduced for large\u2011scale fact extraction and verification, and in which conference proceedings was it published?",
+          "expected": "rag_lewis2020.pdf p[15]",
+          "retrieved": [
+            "beir_thakur2021.pdf p20",
+            "beir_thakur2021.pdf p20",
+            "beir_thakur2021.pdf p19",
+            "beir_thakur2021.pdf p13",
+            "rag_lewis2020.pdf p16",
+            "beir_thakur2021.pdf p4",
+            "beir_thakur2021.pdf p2",
+            "beir_thakur2021.pdf p10",
+            "beir_thakur2021.pdf p14",
+            "beir_thakur2021.pdf p11"
+          ],
+          "rank": null
+        },
+        {
+          "question": "Which method is proposed to prevent catastrophic forgetting when reducing model bias in sentence\u2011pair classification, and where was it posted?",
+          "expected": "rag_lewis2020.pdf p[15]",
+          "retrieved": [
+            "rag_lewis2020.pdf p15",
+            "rag_lewis2020.pdf p15",
+            "rag_lewis2020.pdf p9",
+            "rag_lewis2020.pdf p15",
+            "rag_lewis2020.pdf p14",
+            "rag_lewis2020.pdf p1",
+            "rag_lewis2020.pdf p12",
+            "colbert_khattab2020.pdf p3",
+            "dpr_karpukhin2020.pdf p8",
+            "rag_lewis2020.pdf p12"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "How many training instances are provided for the Natural Questions dataset?",
+          "expected": "rag_lewis2020.pdf p[19]",
+          "retrieved": [
+            "dpr_karpukhin2020.pdf p4",
+            "dpr_karpukhin2020.pdf p4",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p4",
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p7",
+            "rag_lewis2020.pdf p19",
+            "beir_thakur2021.pdf p19"
+          ],
+          "rank": 9
+        },
+        {
+          "question": "Which model obtains a higher exact\u2011match score on Natural Questions, T5\u2011large or RAG\u2011Sequence?",
+          "expected": "rag_lewis2020.pdf p[19]",
+          "retrieved": [
+            "rag_lewis2020.pdf p6",
+            "rag_lewis2020.pdf p4",
+            "rag_lewis2020.pdf p7",
+            "rag_lewis2020.pdf p6",
+            "rag_lewis2020.pdf p6",
+            "rag_lewis2020.pdf p17",
+            "rag_lewis2020.pdf p4",
+            "rag_lewis2020.pdf p5",
+            "dpr_karpukhin2020.pdf p13",
+            "rag_lewis2020.pdf p5"
+          ],
+          "rank": null
+        }
+      ]
+    },
+    {
+      "model": "BAAI/bge-small-en-v1.5",
+      "hit@1": 0.6521739130434783,
+      "hit@3": 0.8478260869565217,
+      "hit@5": 0.8913043478260869,
+      "mrr": 0.7577898550724638,
+      "truncated_chunks": 0.0,
+      "index_seconds": 35.213719699997455,
+      "per_question": [
+        {
+          "question": "How many distinct retrieval tasks are included in the BEIR benchmark and can you name three of them?",
+          "expected": "beir_thakur2021.pdf p[2]",
+          "retrieved": [
+            "beir_thakur2021.pdf p3",
+            "beir_thakur2021.pdf p2",
+            "beir_thakur2021.pdf p17",
+            "beir_thakur2021.pdf p2",
+            "beir_thakur2021.pdf p17",
+            "beir_thakur2021.pdf p9",
+            "beir_thakur2021.pdf p6",
+            "beir_thakur2021.pdf p4",
+            "beir_thakur2021.pdf p5",
+            "beir_thakur2021.pdf p17"
+          ],
+          "rank": 2
+        },
+        {
+          "question": "What is the range of average query lengths across the BEIR datasets?",
+          "expected": "beir_thakur2021.pdf p[2]",
+          "retrieved": [
+            "beir_thakur2021.pdf p2",
+            "beir_thakur2021.pdf p8",
+            "beir_thakur2021.pdf p2",
+            "beir_thakur2021.pdf p5",
+            "beir_thakur2021.pdf p4",
+            "beir_thakur2021.pdf p3",
+            "beir_thakur2021.pdf p2",
+            "beir_thakur2021.pdf p17",
+            "beir_thakur2021.pdf p4",
+            "beir_thakur2021.pdf p22"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "Which dense retrieval model showed the largest increase in nDCG@10 after adding the missing relevance judgments on TREC\u2011COVID?",
+          "expected": "beir_thakur2021.pdf p[9]",
+          "retrieved": [
+            "beir_thakur2021.pdf p9",
+            "beir_thakur2021.pdf p9",
+            "beir_thakur2021.pdf p9",
+            "dpr_karpukhin2020.pdf p5",
+            "beir_thakur2021.pdf p7",
+            "beir_thakur2021.pdf p8",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p9",
+            "beir_thakur2021.pdf p9",
+            "beir_thakur2021.pdf p24"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "What is the Hole@10 percentage for the BM25 baseline on the TREC\u2011COVID dataset?",
+          "expected": "beir_thakur2021.pdf p[9]",
+          "retrieved": [
+            "beir_thakur2021.pdf p9",
+            "beir_thakur2021.pdf p9",
+            "beir_thakur2021.pdf p7",
+            "beir_thakur2021.pdf p9",
+            "beir_thakur2021.pdf p24",
+            "beir_thakur2021.pdf p9",
+            "beir_thakur2021.pdf p18",
+            "beir_thakur2021.pdf p5",
+            "beir_thakur2021.pdf p7",
+            "dpr_karpukhin2020.pdf p5"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "Which 2020 study introduced a method for task\u2011agnostic compression of pre\u2011trained transformers using deep self\u2011attention distillation?",
+          "expected": "beir_thakur2021.pdf p[14]",
+          "retrieved": [
+            "beir_thakur2021.pdf p14",
+            "rag_lewis2020.pdf p11",
+            "colbert_khattab2020.pdf p3",
+            "rag_lewis2020.pdf p9",
+            "colbert_khattab2020.pdf p10",
+            "dpr_karpukhin2020.pdf p9",
+            "dpr_karpukhin2020.pdf p5",
+            "beir_thakur2021.pdf p14",
+            "colbert_khattab2020.pdf p10",
+            "beir_thakur2021.pdf p12"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "What is the name of the 2020 open research dataset that aggregates COVID\u201119 literature?",
+          "expected": "beir_thakur2021.pdf p[14]",
+          "retrieved": [
+            "beir_thakur2021.pdf p14",
+            "beir_thakur2021.pdf p14",
+            "beir_thakur2021.pdf p10",
+            "beir_thakur2021.pdf p7",
+            "beir_thakur2021.pdf p13",
+            "beir_thakur2021.pdf p14",
+            "beir_thakur2021.pdf p22",
+            "beir_thakur2021.pdf p20",
+            "beir_thakur2021.pdf p18",
+            "beir_thakur2021.pdf p2"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "Did the authors provide error bars for the experimental results?",
+          "expected": "beir_thakur2021.pdf p[16]",
+          "retrieved": [
+            "beir_thakur2021.pdf p16",
+            "beir_thakur2021.pdf p16",
+            "dpr_karpukhin2020.pdf p12",
+            "beir_thakur2021.pdf p20",
+            "dpr_karpukhin2020.pdf p8",
+            "colbert_khattab2020.pdf p6",
+            "dpr_karpukhin2020.pdf p5",
+            "rag_lewis2020.pdf p7",
+            "beir_thakur2021.pdf p16",
+            "colbert_khattab2020.pdf p8"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "What information about computational resources was included in the checklist?",
+          "expected": "beir_thakur2021.pdf p[16]",
+          "retrieved": [
+            "beir_thakur2021.pdf p2",
+            "beir_thakur2021.pdf p2",
+            "beir_thakur2021.pdf p18",
+            "beir_thakur2021.pdf p20",
+            "beir_thakur2021.pdf p16",
+            "beir_thakur2021.pdf p19",
+            "beir_thakur2021.pdf p2",
+            "beir_thakur2021.pdf p20",
+            "colbert_khattab2020.pdf p6",
+            "rag_lewis2020.pdf p16"
+          ],
+          "rank": 5
+        },
+        {
+          "question": "How many unique queries are in the Quora Duplicate Questions corpus used for evaluation?",
+          "expected": "beir_thakur2021.pdf p[19]",
+          "retrieved": [
+            "beir_thakur2021.pdf p19",
+            "beir_thakur2021.pdf p19",
+            "beir_thakur2021.pdf p18",
+            "beir_thakur2021.pdf p18",
+            "colbert_khattab2020.pdf p6",
+            "beir_thakur2021.pdf p17",
+            "dpr_karpukhin2020.pdf p2",
+            "rag_lewis2020.pdf p4",
+            "beir_thakur2021.pdf p19",
+            "colbert_khattab2020.pdf p6"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "In the SCIDOCS citation prediction task, how many relevant papers are provided for each query paper?",
+          "expected": "beir_thakur2021.pdf p[19]",
+          "retrieved": [
+            "beir_thakur2021.pdf p19",
+            "beir_thakur2021.pdf p4",
+            "beir_thakur2021.pdf p17",
+            "beir_thakur2021.pdf p17",
+            "colbert_khattab2020.pdf p6",
+            "beir_thakur2021.pdf p3",
+            "beir_thakur2021.pdf p2",
+            "beir_thakur2021.pdf p10",
+            "beir_thakur2021.pdf p20",
+            "beir_thakur2021.pdf p6"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "What speed improvement does ColBERT achieve when used as a re\u2011ranker compared to standard BERT\u2011based models?",
+          "expected": "colbert_khattab2020.pdf p[2]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p2",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p5",
+            "beir_thakur2021.pdf p6",
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p6",
+            "colbert_khattab2020.pdf p1",
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p9"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "How does ColBERT compute relevance between a query and a document using its late interaction mechanism?",
+          "expected": "colbert_khattab2020.pdf p[2]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p2",
+            "colbert_khattab2020.pdf p5",
+            "colbert_khattab2020.pdf p1",
+            "colbert_khattab2020.pdf p6",
+            "colbert_khattab2020.pdf p5",
+            "colbert_khattab2020.pdf p2",
+            "beir_thakur2021.pdf p12",
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p1",
+            "colbert_khattab2020.pdf p3"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "What is the reported MRR@10 for the Transformer\u2011Kernel model on the MS MARCO development set?",
+          "expected": "colbert_khattab2020.pdf p[3]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p3",
+            "colbert_khattab2020.pdf p6",
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p8",
+            "rag_lewis2020.pdf p3"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "Which neural ranking model uses a MaxSim\u2011based late interaction mechanism and achieves up to 36% MRR@10 on MS MARCO?",
+          "expected": "colbert_khattab2020.pdf p[3]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p1",
+            "beir_thakur2021.pdf p7",
+            "beir_thakur2021.pdf p6",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p6",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p3",
+            "colbert_khattab2020.pdf p2",
+            "beir_thakur2021.pdf p17"
+          ],
+          "rank": 8
+        },
+        {
+          "question": "What mechanism does ColBERT use to allow BERT to incorporate new or re\u2011weighted query terms during encoding?",
+          "expected": "colbert_khattab2020.pdf p[4]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p2",
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p2",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p5"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "How does the document encoder reduce the number of embeddings per document before late interaction?",
+          "expected": "colbert_khattab2020.pdf p[4]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p9",
+            "dpr_karpukhin2020.pdf p12",
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p4",
+            "rag_lewis2020.pdf p4",
+            "dpr_karpukhin2020.pdf p12",
+            "colbert_khattab2020.pdf p7"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "Which off\u2011the\u2011shelf library is employed to perform large\u2011scale vector similarity search when indexing document embeddings?",
+          "expected": "colbert_khattab2020.pdf p[5]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p5",
+            "colbert_khattab2020.pdf p5",
+            "colbert_khattab2020.pdf p5",
+            "colbert_khattab2020.pdf p6",
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p6",
+            "colbert_khattab2020.pdf p1",
+            "beir_thakur2021.pdf p12",
+            "dpr_karpukhin2020.pdf p10"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "In what way does ColBERT lower the scoring cost relative to standard BERT rankers?",
+          "expected": "colbert_khattab2020.pdf p[5]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p5",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p2",
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p5",
+            "colbert_khattab2020.pdf p5",
+            "colbert_khattab2020.pdf p2"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "What is the MRR@10 score of the ColBERT end-to-end model on the local evaluation set?",
+          "expected": "colbert_khattab2020.pdf p[7]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p6",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p1",
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p6",
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p9"
+          ],
+          "rank": 3
+        },
+        {
+          "question": "How many FLOPs per query does the BERT large model use, and how does that compare to ColBERT built on BERT base?",
+          "expected": "colbert_khattab2020.pdf p[7]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p2",
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p5",
+            "colbert_khattab2020.pdf p2"
+          ],
+          "rank": 2
+        },
+        {
+          "question": "What is the latency reported for the Anserini BM25 baseline in the full\u2011retrieval experiments?",
+          "expected": "colbert_khattab2020.pdf p[8]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p7",
+            "beir_thakur2021.pdf p5",
+            "colbert_khattab2020.pdf p8",
+            "beir_thakur2021.pdf p6",
+            "beir_thakur2021.pdf p8",
+            "colbert_khattab2020.pdf p1"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "By how many times does BERT's FLOP count exceed ColBERT's when re\u2011ranking the top\u201110 results?",
+          "expected": "colbert_khattab2020.pdf p[8]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p8",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p2",
+            "colbert_khattab2020.pdf p7",
+            "colbert_khattab2020.pdf p2",
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p1",
+            "colbert_khattab2020.pdf p5"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "What top\u20115 retrieval accuracy does the Dense Passage Retriever achieve compared to BM25?",
+          "expected": "dpr_karpukhin2020.pdf p[2]",
+          "retrieved": [
+            "dpr_karpukhin2020.pdf p5",
+            "rag_lewis2020.pdf p7",
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p2",
+            "dpr_karpukhin2020.pdf p2",
+            "beir_thakur2021.pdf p7",
+            "colbert_khattab2020.pdf p8",
+            "dpr_karpukhin2020.pdf p4",
+            "beir_thakur2021.pdf p6"
+          ],
+          "rank": 5
+        },
+        {
+          "question": "How many passages were indexed in the experiments described for the DPR system?",
+          "expected": "dpr_karpukhin2020.pdf p[2]",
+          "retrieved": [
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p2",
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p8",
+            "dpr_karpukhin2020.pdf p4",
+            "dpr_karpukhin2020.pdf p2",
+            "dpr_karpukhin2020.pdf p13",
+            "dpr_karpukhin2020.pdf p8",
+            "dpr_karpukhin2020.pdf p12"
+          ],
+          "rank": 2
+        },
+        {
+          "question": "What three categories of negative passages are used during training of the dense passage retriever?",
+          "expected": "dpr_karpukhin2020.pdf p[3]",
+          "retrieved": [
+            "dpr_karpukhin2020.pdf p3",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p8",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p2",
+            "dpr_karpukhin2020.pdf p3",
+            "dpr_karpukhin2020.pdf p2",
+            "dpr_karpukhin2020.pdf p4"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "How many question\u2011passage pairs are processed in each training batch and what matrix is formed from their embeddings?",
+          "expected": "dpr_karpukhin2020.pdf p[3]",
+          "retrieved": [
+            "dpr_karpukhin2020.pdf p3",
+            "dpr_karpukhin2020.pdf p2",
+            "dpr_karpukhin2020.pdf p3",
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p5",
+            "colbert_khattab2020.pdf p5",
+            "dpr_karpukhin2020.pdf p2",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p3",
+            "dpr_karpukhin2020.pdf p3"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "What is the top\u201120 retrieval accuracy of the Dense Passage Retriever on Natural Questions compared with BM25?",
+          "expected": "dpr_karpukhin2020.pdf p[5]",
+          "retrieved": [
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p6",
+            "rag_lewis2020.pdf p7",
+            "dpr_karpukhin2020.pdf p2",
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p2",
+            "beir_thakur2021.pdf p8",
+            "beir_thakur2021.pdf p6",
+            "dpr_karpukhin2020.pdf p2"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "How many training epochs are used for large versus small datasets when training the DPR model?",
+          "expected": "dpr_karpukhin2020.pdf p[5]",
+          "retrieved": [
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p8",
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p4",
+            "dpr_karpukhin2020.pdf p8",
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p8",
+            "dpr_karpukhin2020.pdf p8"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "Which retrieval approach achieved new state-of-the-art results on several open-domain question answering benchmarks according to the authors?",
+          "expected": "dpr_karpukhin2020.pdf p[9]",
+          "retrieved": [
+            "dpr_karpukhin2020.pdf p11",
+            "dpr_karpukhin2020.pdf p9",
+            "dpr_karpukhin2020.pdf p2",
+            "beir_thakur2021.pdf p18",
+            "beir_thakur2021.pdf p9",
+            "dpr_karpukhin2020.pdf p1",
+            "beir_thakur2021.pdf p10",
+            "beir_thakur2021.pdf p12",
+            "dpr_karpukhin2020.pdf p10",
+            "dpr_karpukhin2020.pdf p8"
+          ],
+          "rank": 2
+        },
+        {
+          "question": "What alternative to the dual\u2011encoder framework is described, and what component does it add to BERT encoders?",
+          "expected": "dpr_karpukhin2020.pdf p[9]",
+          "retrieved": [
+            "beir_thakur2021.pdf p11",
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p9",
+            "colbert_khattab2020.pdf p5",
+            "rag_lewis2020.pdf p3",
+            "beir_thakur2021.pdf p6",
+            "dpr_karpukhin2020.pdf p2",
+            "colbert_khattab2020.pdf p6",
+            "rag_lewis2020.pdf p11",
+            "dpr_karpukhin2020.pdf p3"
+          ],
+          "rank": null
+        },
+        {
+          "question": "Which 2014 study introduced Asymmetric Locality Sensitive Hashing for sublinear time maximum inner product search?",
+          "expected": "dpr_karpukhin2020.pdf p[11]",
+          "retrieved": [
+            "colbert_khattab2020.pdf p10",
+            "dpr_karpukhin2020.pdf p11",
+            "dpr_karpukhin2020.pdf p3",
+            "rag_lewis2020.pdf p3",
+            "dpr_karpukhin2020.pdf p6",
+            "colbert_khattab2020.pdf p10",
+            "colbert_khattab2020.pdf p4",
+            "colbert_khattab2020.pdf p5",
+            "dpr_karpukhin2020.pdf p3",
+            "colbert_khattab2020.pdf p8"
+          ],
+          "rank": 2
+        },
+        {
+          "question": "What is the title of the 2020 paper that examines the amount of knowledge that can be stored in language model parameters?",
+          "expected": "dpr_karpukhin2020.pdf p[11]",
+          "retrieved": [
+            "dpr_karpukhin2020.pdf p11",
+            "rag_lewis2020.pdf p14",
+            "rag_lewis2020.pdf p14",
+            "dpr_karpukhin2020.pdf p11",
+            "rag_lewis2020.pdf p14",
+            "colbert_khattab2020.pdf p10",
+            "rag_lewis2020.pdf p1",
+            "beir_thakur2021.pdf p10",
+            "rag_lewis2020.pdf p1",
+            "beir_thakur2021.pdf p14"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "What is the Top\u20111 retrieval accuracy of the DPR model when it is trained using natural gold passages on the Natural Questions development set?",
+          "expected": "dpr_karpukhin2020.pdf p[12]",
+          "retrieved": [
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p8",
+            "dpr_karpukhin2020.pdf p2"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "What margin value is used for the triplet loss in the experiments on Natural Questions?",
+          "expected": "dpr_karpukhin2020.pdf p[12]",
+          "retrieved": [
+            "dpr_karpukhin2020.pdf p12",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p4",
+            "dpr_karpukhin2020.pdf p12",
+            "beir_thakur2021.pdf p11",
+            "rag_lewis2020.pdf p19",
+            "beir_thakur2021.pdf p21",
+            "beir_thakur2021.pdf p3",
+            "dpr_karpukhin2020.pdf p5"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "Which pre\u2011trained models are used for the retriever and generator in the Retrieval\u2011Augmented Generation approach?",
+          "expected": "rag_lewis2020.pdf p[2]",
+          "retrieved": [
+            "rag_lewis2020.pdf p2",
+            "rag_lewis2020.pdf p1",
+            "rag_lewis2020.pdf p12",
+            "dpr_karpukhin2020.pdf p10",
+            "rag_lewis2020.pdf p3",
+            "rag_lewis2020.pdf p9",
+            "dpr_karpukhin2020.pdf p9",
+            "rag_lewis2020.pdf p9",
+            "dpr_karpukhin2020.pdf p12",
+            "beir_thakur2021.pdf p1"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "On which knowledge\u2011intensive benchmark datasets does the RAG model achieve state\u2011of\u2011the\u2011art performance?",
+          "expected": "rag_lewis2020.pdf p[2]",
+          "retrieved": [
+            "rag_lewis2020.pdf p5",
+            "rag_lewis2020.pdf p8",
+            "rag_lewis2020.pdf p6",
+            "rag_lewis2020.pdf p4",
+            "rag_lewis2020.pdf p6",
+            "beir_thakur2021.pdf p5",
+            "rag_lewis2020.pdf p17",
+            "rag_lewis2020.pdf p9",
+            "rag_lewis2020.pdf p7",
+            "rag_lewis2020.pdf p7"
+          ],
+          "rank": null
+        },
+        {
+          "question": "What metric is used to evaluate the quality of generated Jeopardy questions and why is it preferred over standard BLEU?",
+          "expected": "rag_lewis2020.pdf p[5]",
+          "retrieved": [
+            "rag_lewis2020.pdf p6",
+            "rag_lewis2020.pdf p5",
+            "rag_lewis2020.pdf p8",
+            "rag_lewis2020.pdf p6",
+            "rag_lewis2020.pdf p6",
+            "rag_lewis2020.pdf p5",
+            "colbert_khattab2020.pdf p8",
+            "rag_lewis2020.pdf p7",
+            "dpr_karpukhin2020.pdf p5",
+            "beir_thakur2021.pdf p5"
+          ],
+          "rank": 2
+        },
+        {
+          "question": "How does the RAG model handle the FEVER fact verification task without using evidence supervision?",
+          "expected": "rag_lewis2020.pdf p[5]",
+          "retrieved": [
+            "rag_lewis2020.pdf p7",
+            "rag_lewis2020.pdf p5",
+            "rag_lewis2020.pdf p5",
+            "beir_thakur2021.pdf p20",
+            "rag_lewis2020.pdf p18",
+            "rag_lewis2020.pdf p15",
+            "rag_lewis2020.pdf p6",
+            "rag_lewis2020.pdf p8",
+            "rag_lewis2020.pdf p6",
+            "rag_lewis2020.pdf p5"
+          ],
+          "rank": 2
+        },
+        {
+          "question": "What advantage does grounding the model in Wikipedia provide regarding the factual accuracy of its outputs?",
+          "expected": "rag_lewis2020.pdf p[10]",
+          "retrieved": [
+            "rag_lewis2020.pdf p10",
+            "rag_lewis2020.pdf p7",
+            "dpr_karpukhin2020.pdf p5",
+            "rag_lewis2020.pdf p14",
+            "dpr_karpukhin2020.pdf p5",
+            "colbert_khattab2020.pdf p1",
+            "rag_lewis2020.pdf p18",
+            "beir_thakur2021.pdf p20",
+            "beir_thakur2021.pdf p8",
+            "rag_lewis2020.pdf p6"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "Which types of harmful content could the RAG model potentially be misused to generate, similar to concerns with GPT\u20112?",
+          "expected": "rag_lewis2020.pdf p[10]",
+          "retrieved": [
+            "rag_lewis2020.pdf p10",
+            "rag_lewis2020.pdf p7",
+            "rag_lewis2020.pdf p19",
+            "rag_lewis2020.pdf p3",
+            "rag_lewis2020.pdf p4",
+            "rag_lewis2020.pdf p6",
+            "rag_lewis2020.pdf p7",
+            "rag_lewis2020.pdf p2",
+            "rag_lewis2020.pdf p2",
+            "rag_lewis2020.pdf p6"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "Which 2020 work proposed the Retrieval\u2011augmented Language Model (REALM) and who are the authors?",
+          "expected": "rag_lewis2020.pdf p[12]",
+          "retrieved": [
+            "rag_lewis2020.pdf p12",
+            "rag_lewis2020.pdf p1",
+            "dpr_karpukhin2020.pdf p10",
+            "colbert_khattab2020.pdf p10",
+            "dpr_karpukhin2020.pdf p10",
+            "dpr_karpukhin2020.pdf p10",
+            "rag_lewis2020.pdf p11",
+            "colbert_khattab2020.pdf p10",
+            "dpr_karpukhin2020.pdf p9",
+            "dpr_karpukhin2020.pdf p11"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "What optimization algorithm is referenced for stochastic optimization and in which year was it published?",
+          "expected": "rag_lewis2020.pdf p[12]",
+          "retrieved": [
+            "rag_lewis2020.pdf p12",
+            "colbert_khattab2020.pdf p10",
+            "rag_lewis2020.pdf p12",
+            "beir_thakur2021.pdf p13",
+            "colbert_khattab2020.pdf p10",
+            "beir_thakur2021.pdf p11",
+            "rag_lewis2020.pdf p12",
+            "colbert_khattab2020.pdf p7",
+            "rag_lewis2020.pdf p3",
+            "rag_lewis2020.pdf p4"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "What dataset is introduced for large\u2011scale fact extraction and verification, and in which conference proceedings was it published?",
+          "expected": "rag_lewis2020.pdf p[15]",
+          "retrieved": [
+            "beir_thakur2021.pdf p13",
+            "beir_thakur2021.pdf p20",
+            "beir_thakur2021.pdf p18",
+            "dpr_karpukhin2020.pdf p8",
+            "beir_thakur2021.pdf p15",
+            "rag_lewis2020.pdf p15",
+            "beir_thakur2021.pdf p20",
+            "beir_thakur2021.pdf p10",
+            "rag_lewis2020.pdf p16",
+            "beir_thakur2021.pdf p14"
+          ],
+          "rank": 6
+        },
+        {
+          "question": "Which method is proposed to prevent catastrophic forgetting when reducing model bias in sentence\u2011pair classification, and where was it posted?",
+          "expected": "rag_lewis2020.pdf p[15]",
+          "retrieved": [
+            "rag_lewis2020.pdf p15",
+            "rag_lewis2020.pdf p15",
+            "beir_thakur2021.pdf p1",
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p5",
+            "beir_thakur2021.pdf p13",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p8",
+            "rag_lewis2020.pdf p13",
+            "colbert_khattab2020.pdf p3"
+          ],
+          "rank": 1
+        },
+        {
+          "question": "How many training instances are provided for the Natural Questions dataset?",
+          "expected": "rag_lewis2020.pdf p[19]",
+          "retrieved": [
+            "dpr_karpukhin2020.pdf p4",
+            "dpr_karpukhin2020.pdf p4",
+            "rag_lewis2020.pdf p19",
+            "dpr_karpukhin2020.pdf p5",
+            "dpr_karpukhin2020.pdf p6",
+            "beir_thakur2021.pdf p1",
+            "dpr_karpukhin2020.pdf p6",
+            "dpr_karpukhin2020.pdf p6",
+            "beir_thakur2021.pdf p18",
+            "dpr_karpukhin2020.pdf p5"
+          ],
+          "rank": 3
+        },
+        {
+          "question": "Which model obtains a higher exact\u2011match score on Natural Questions, T5\u2011large or RAG\u2011Sequence?",
+          "expected": "rag_lewis2020.pdf p[19]",
+          "retrieved": [
+            "rag_lewis2020.pdf p6",
+            "rag_lewis2020.pdf p7",
+            "rag_lewis2020.pdf p5",
+            "rag_lewis2020.pdf p17",
+            "rag_lewis2020.pdf p8",
+            "rag_lewis2020.pdf p3",
+            "rag_lewis2020.pdf p4",
+            "rag_lewis2020.pdf p6",
+            "rag_lewis2020.pdf p4",
+            "rag_lewis2020.pdf p2"
+          ],
+          "rank": null
+        }
+      ]
+    }
+  ]
+}

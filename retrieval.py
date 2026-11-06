@@ -7,7 +7,9 @@ from sentence_transformers import SentenceTransformer
 from pipeline import build_pipeline
 
 
-DEFAULT_EMBED_MODEL = 'all-MiniLM-L6-v2'
+# bge-small beat all-MiniLM-L6-v2 on the eval set and reads 512 tokens per
+# chunk instead of 256. Placeholder until the Phase 2 embedding comparison.
+DEFAULT_EMBED_MODEL = 'BAAI/bge-small-en-v1.5'
 
 # Some embedding models are trained with an instruction prepended to the
 # *query* (never the documents). Leaving it off quietly costs retrieval quality.
@@ -26,7 +28,9 @@ def get_embed_model(name=DEFAULT_EMBED_MODEL):
 def embed_chunks(chunks, model_name=DEFAULT_EMBED_MODEL) -> np.ndarray:
   model = get_embed_model(model_name)
 
-  text_list = [chunk["text"] for chunk in chunks]
+  # embed_text adds the paper title and section heading (see ingest.py);
+  # chunks from the legacy pipeline only have plain text.
+  text_list = [chunk.get("embed_text", chunk["text"]) for chunk in chunks]
 
   # normalize_embeddings=True gives unit-length vectors, so inner-product
   # search (IndexFlatIP) behaves as cosine similarity — the standard choice

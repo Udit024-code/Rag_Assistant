@@ -8,3 +8,6 @@ chunks_metadata.pkl
 
 # Eval papers are downloaded by eval/download_docs.py, not committed
 eval/docs/
+
+# Parsed-PDF cache (ingest.py)
+.cache/
