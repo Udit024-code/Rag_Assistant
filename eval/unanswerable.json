@@ -1,0 +1,14 @@
+[
+  {"question": "What results does ColBERT report on the Natural Questions benchmark?",
+   "why": "ColBERT evaluates on MS MARCO and TREC CAR only; DPR reports Natural Questions, a tempting mix-up."},
+  {"question": "What learning rate and batch size were used to fine-tune ColBERT on TREC-COVID?",
+   "why": "ColBERT is never fine-tuned on TREC-COVID; BEIR only evaluates it zero-shot."},
+  {"question": "How well does DPR work on Chinese or other non-English question answering datasets?",
+   "why": "DPR evaluates English datasets only."},
+  {"question": "What latency does RAG achieve when running on mobile phones?",
+   "why": "No paper measures mobile inference."},
+  {"question": "How much did it cost in US dollars to run all the BEIR experiments?",
+   "why": "BEIR's checklist says total compute was not reported."},
+  {"question": "How is reinforcement learning from human feedback used to train RAG's generator?",
+   "why": "RAG uses no RLHF."}
+]

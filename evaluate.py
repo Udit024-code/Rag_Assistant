@@ -37,11 +37,14 @@ KS = (1, 3, 5)  # cut-offs for Hit@k
 MAX_K = 10      # depth searched when computing MRR
 
 
-def load_testset(path=TESTSET_PATH, include_unverified=False):
+def load_testset(path=TESTSET_PATH, include_unverified=False, difficulty='all'):
     with open(path, encoding='utf-8') as f:
         testset = json.load(f)
     if not include_unverified:
         testset = [t for t in testset if t.get('verified', False)]
+    if difficulty != 'all':
+        # Questions drafted before --hard existed are standard.
+        testset = [t for t in testset if t.get('difficulty', 'standard') == difficulty]
     return testset
 
 
@@ -129,10 +132,12 @@ def main():
     parser.add_argument('--overlap', type=int, default=1, help='legacy only: sentences shared between chunks')
     parser.add_argument('--x-tolerance', type=float, default=DEFAULT_X_TOLERANCE, help='legacy only: pdfplumber letter-gap tolerance')
     parser.add_argument('--include-unverified', action='store_true', help='also use LLM-drafted questions not yet reviewed')
+    parser.add_argument('--difficulty', default='all', choices=['all', 'standard', 'hard'],
+                        help='hard = newcomer phrasing with little word overlap with the answer page')
     parser.add_argument('--answers', action='store_true', help='also score generated answers for the first configuration (uses Groq quota)')
     args = parser.parse_args()
 
-    testset = load_testset(include_unverified=args.include_unverified)
+    testset = load_testset(include_unverified=args.include_unverified, difficulty=args.difficulty)
     if not testset:
         raise SystemExit('No verified questions yet - review eval/testset.json or pass --include-unverified.')
     pdf_paths = sorted(glob.glob(os.path.join(args.docs_dir, '*.pdf')))
@@ -203,7 +208,7 @@ def main():
                     {'chunk_tokens': args.chunk_tokens, 'chunk_overlap': args.chunk_overlap,
                      'embed_context': args.embed_context})
         json.dump({'docs': [os.path.basename(p) for p in pdf_paths], 'parser': args.parser, **settings,
-                   'questions': len(testset), 'include_unverified': args.include_unverified,
+                   'questions': len(testset), 'include_unverified': args.include_unverified, 'difficulty': args.difficulty,
                    'runs': runs}, f, indent=2)
     print(f'\nSaved {out_path}')
 

@@ -17,6 +17,7 @@ answer   streams a grounded answer citing the numbered sources as [1], [2].
 Progress ("Searching: ...") and answer tokens are emitted through LangGraph's
 custom stream, so the UI can show them live.
 """
+import logging
 import re
 from typing import TypedDict
 
@@ -117,11 +118,21 @@ def build_agent(retriever, filters=None, library_titles=(), with_answer=True):
 
     def plan(state):
         get_stream_writer()({'status': 'Planning the search'})
-        result = complete_json([{'role': 'user', 'content': PLAN_PROMPT.format(
-            titles=titles, history=_history_text(state.get('history', [])), question=state['question'])}])
+        try:
+            result = complete_json([{'role': 'user', 'content': PLAN_PROMPT.format(
+                titles=titles, history=_history_text(state.get('history', [])), question=state['question'])}])
+        except Exception as e:
+            # Planning is an optimisation: searching the question as asked still works.
+            logging.warning('Planning failed, searching the question as asked: %s', e)
+            result = {}
         queries = [q for q in result.get('queries', []) if isinstance(q, str) and q.strip()][:3]
         standalone = result.get('standalone_question') or state['question']
-        return {'standalone': standalone, 'needs_search': bool(result.get('needs_search', True)),
+        # The planner may skip searching for questions that merely *sound*
+        # off-topic (BEIR's example queries mention Game of Thrones); only
+        # short small talk is allowed to skip the library.
+        small_talk = len(state['question'].split()) <= 4 and '?' not in state['question']
+        needs_search = bool(result.get('needs_search', True)) or not small_talk
+        return {'standalone': standalone, 'needs_search': needs_search,
                 'queries': queries or [standalone], 'searched': [], 'sources': [], 'rounds': 0}
 
     def retrieve(state):
@@ -152,8 +163,12 @@ def build_agent(retriever, filters=None, library_titles=(), with_answer=True):
         # Full chunks (they're ~192 tokens): a truncated snippet can cut off the
         # table row that holds the answer and trigger a pointless extra search.
         evidence = '\n'.join(f"- {_source_label(c)}: {c['text']}" for c in state['sources'])
-        result = complete_json([{'role': 'user', 'content': CHECK_PROMPT.format(
-            question=state['standalone'], evidence=evidence)}], max_tokens=512)
+        try:
+            result = complete_json([{'role': 'user', 'content': CHECK_PROMPT.format(
+                question=state['standalone'], evidence=evidence)}])
+        except Exception as e:
+            logging.warning('Evidence check failed, answering with what was found: %s', e)
+            return {'queries': []}
         missing = [q for q in result.get('missing_queries', []) if isinstance(q, str) and q.strip()]
         if result.get('sufficient', True) or not missing:
             return {'queries': []}

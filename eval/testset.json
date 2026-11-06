@@ -64,36 +64,6 @@
     "verified": false
   },
   {
-    "question": "Which 2020 study introduced a method for task‑agnostic compression of pre‑trained transformers using deep self‑attention distillation?",
-    "doc": "beir_thakur2021.pdf",
-    "expected_pages": [
-      14
-    ],
-    "expected_keywords": [
-      "miniLM",
-      "deep self-attention distillation",
-      "task-agnostic compression"
-    ],
-    "reference_answer": "MiniLM: Deep Self‑Attention Distillation for Task‑Agnostic Compression of Pre‑Trained Transformers (2020).",
-    "origin": "llm-draft:openai/gpt-oss-120b",
-    "verified": false
-  },
-  {
-    "question": "What is the name of the 2020 open research dataset that aggregates COVID‑19 literature?",
-    "doc": "beir_thakur2021.pdf",
-    "expected_pages": [
-      14
-    ],
-    "expected_keywords": [
-      "cord-19",
-      "covid-19",
-      "open research dataset"
-    ],
-    "reference_answer": "CORD‑19 (COVID‑19 Open Research Dataset).",
-    "origin": "llm-draft:openai/gpt-oss-120b",
-    "verified": false
-  },
-  {
     "question": "Did the authors provide error bars for the experimental results?",
     "doc": "beir_thakur2021.pdf",
     "expected_pages": [
@@ -479,37 +449,6 @@
     "verified": false
   },
   {
-    "question": "Which 2014 study introduced Asymmetric Locality Sensitive Hashing for sublinear time maximum inner product search?",
-    "doc": "dpr_karpukhin2020.pdf",
-    "expected_pages": [
-      11
-    ],
-    "expected_keywords": [
-      "alsh",
-      "maximum inner product search",
-      "2014"
-    ],
-    "reference_answer": "Lin, Ji, Liu, and Sun (2014) presented ALSH for sublinear time MIPS.",
-    "origin": "llm-draft:openai/gpt-oss-120b",
-    "verified": false
-  },
-  {
-    "question": "What is the title of the 2020 paper that examines the amount of knowledge that can be stored in language model parameters?",
-    "doc": "dpr_karpukhin2020.pdf",
-    "expected_pages": [
-      11
-    ],
-    "expected_keywords": [
-      "knowledge",
-      "parameters",
-      "language model",
-      "2020"
-    ],
-    "reference_answer": "The paper is titled \"How much knowledge can you pack into the parameters of a language model?\" (2020).",
-    "origin": "llm-draft:openai/gpt-oss-120b",
-    "verified": false
-  },
-  {
     "question": "What is the Top‑1 retrieval accuracy of the DPR model when it is trained using natural gold passages on the Natural Questions development set?",
     "doc": "dpr_karpukhin2020.pdf",
     "expected_pages": [
@@ -634,72 +573,6 @@
     "verified": false
   },
   {
-    "question": "Which 2020 work proposed the Retrieval‑augmented Language Model (REALM) and who are the authors?",
-    "doc": "rag_lewis2020.pdf",
-    "expected_pages": [
-      12
-    ],
-    "expected_keywords": [
-      "realm",
-      "retrieval‑augmented language model",
-      "2020",
-      "guu"
-    ],
-    "reference_answer": "REALM was introduced in 2020 by Kelvin Guu, Kenton Lee, Zora Tung, Panupong Pasupat, and Ming‑Wei Chang.",
-    "origin": "llm-draft:openai/gpt-oss-120b",
-    "verified": false
-  },
-  {
-    "question": "What optimization algorithm is referenced for stochastic optimization and in which year was it published?",
-    "doc": "rag_lewis2020.pdf",
-    "expected_pages": [
-      12
-    ],
-    "expected_keywords": [
-      "adam",
-      "stochastic optimization",
-      "2015",
-      "kingma"
-    ],
-    "reference_answer": "The Adam optimizer, introduced by Diederik P. Kingma and Jimmy Ba, was published in 2015.",
-    "origin": "llm-draft:openai/gpt-oss-120b",
-    "verified": false
-  },
-  {
-    "question": "What dataset is introduced for large‑scale fact extraction and verification, and in which conference proceedings was it published?",
-    "doc": "rag_lewis2020.pdf",
-    "expected_pages": [
-      15
-    ],
-    "expected_keywords": [
-      "fever",
-      "large-scale dataset",
-      "fact extraction",
-      "verification",
-      "naacl"
-    ],
-    "reference_answer": "The FEVER dataset, presented at the 2018 NAACL Human Language Technologies conference.",
-    "origin": "llm-draft:openai/gpt-oss-120b",
-    "verified": false
-  },
-  {
-    "question": "Which method is proposed to prevent catastrophic forgetting when reducing model bias in sentence‑pair classification, and where was it posted?",
-    "doc": "rag_lewis2020.pdf",
-    "expected_pages": [
-      15
-    ],
-    "expected_keywords": [
-      "elastic weight consolidation",
-      "catastrophic forgetting",
-      "model biases",
-      "sentence-pair classification",
-      "arxiv"
-    ],
-    "reference_answer": "Elastic weight consolidation, described in an arXiv pre‑print (abs/2004.14366).",
-    "origin": "llm-draft:openai/gpt-oss-120b",
-    "verified": false
-  },
-  {
     "question": "How many training instances are provided for the Natural Questions dataset?",
     "doc": "rag_lewis2020.pdf",
     "expected_pages": [
@@ -728,6 +601,863 @@
     ],
     "reference_answer": "RAG‑Sequence, with 44.5 EM, outperforms T5‑large’s 28.9 EM.",
     "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "How does the Natural Questions dataset used here differ from the version in ReQA, and what filtering steps were applied?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      18
+    ],
+    "expected_keywords": [
+      "natural questions",
+      "reqa",
+      "longer passage",
+      "filtered"
+    ],
+    "reference_answer": "They parsed the original NQ HTML to keep longer, more complex queries, removing those without answers, those whose answer is a table, or those with conflicting Wikipedia pages.",
+    "difficulty": "hard",
+    "word_overlap": 0.5,
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "What does the capped recall metric R_cap@k do differently from the ordinary recall calculation?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      21
+    ],
+    "expected_keywords": [
+      "r_cap@k",
+      "recall",
+      "denominator",
+      "k",
+      "relevant"
+    ],
+    "reference_answer": "R_cap@k limits the denominator to the smaller of k and the number of relevant documents, preventing the recall score from becoming unintuitively low when there are more relevant documents than k.",
+    "difficulty": "hard",
+    "word_overlap": 0.29,
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "What role does faiss play in the ColBERT retrieval pipeline?",
+    "doc": "colbert_khattab2020.pdf",
+    "expected_pages": [
+      5
+    ],
+    "expected_keywords": [
+      "faiss",
+      "vector‑similarity",
+      "indexing",
+      "top‑k",
+      "pruning"
+    ],
+    "reference_answer": "Faiss stores the pre‑computed document vectors on disk and provides fast vector‑similarity search, enabling efficient top‑k retrieval by pruning with MaxSim before exact scoring.",
+    "difficulty": "hard",
+    "word_overlap": 0.5,
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "Which actor is identified as playing Thoros of Myr in the Game of Thrones example, and what is his nationality?",
+    "doc": "dpr_karpukhin2020.pdf",
+    "expected_pages": [
+      13
+    ],
+    "expected_keywords": [
+      "pa­l sverre hagen",
+      "thoros of myr",
+      "norwegian"
+    ],
+    "reference_answer": "The actor is Pa l Sverre Hagen, and he is Norwegian.",
+    "difficulty": "hard",
+    "word_overlap": 0.5,
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "Why do the authors think that adding a searchable external knowledge base helps language models generate more accurate answers?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      1
+    ],
+    "expected_keywords": [
+      "external knowledge",
+      "dense vector index",
+      "Wikipedia",
+      "retrieve"
+    ],
+    "reference_answer": "Because the model can look up facts in a dense Wikipedia index instead of relying only on what it stored inside its weights, which makes its knowledge up‑to‑date and explainable.",
+    "difficulty": "hard",
+    "word_overlap": 0.46,
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "What evidence do the authors give that their retrieval‑augmented models outperform pure generation models on question answering?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      1
+    ],
+    "expected_keywords": [
+      "state of the art",
+      "open domain qa",
+      "seq2seq",
+      "retrieve-and-extract"
+    ],
+    "reference_answer": "They report state‑of‑the‑art results on three open‑domain QA benchmarks, beating both standard seq2seq models and specialized retrieve‑and‑extract systems.",
+    "difficulty": "hard",
+    "word_overlap": 0.36,
+    "origin": "llm-draft:openai/gpt-oss-120b",
+    "verified": false
+  },
+  {
+    "question": "According to the BEIR benchmark results, why might computer-based text search systems using complex vector matching perform worse than simple keyword matching like BM25?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      2
+    ],
+    "expected_keywords": [
+      "underperform",
+      "lexical",
+      "BM25"
+    ],
+    "reference_answer": "Because complex approaches can substantially underperform traditional lexical models due to the lack of correlation between in-domain performance and generalization, and potentially because datasets contain a lexical bias.",
+    "difficulty": "hard",
+    "word_overlap": 0.44,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "What evidence does the research provide to suggest that the TREC-COVID dataset might unfairly disadvantage non-keyword-based search engines during evaluation?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      2
+    ],
+    "expected_keywords": [
+      "lexical",
+      "bias",
+      "annotation"
+    ],
+    "reference_answer": "Manual annotation of missing relevance judgements showed a significant performance improvement for non-lexical approaches, indicating the original data had a strong lexical bias.",
+    "difficulty": "hard",
+    "word_overlap": 0.5,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "What is the main advantage of using dense retrieval systems compared to traditional text-matching methods, and how do they handle the matching process?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      3
+    ],
+    "expected_keywords": [
+      "semantic matches",
+      "lexical gap",
+      "vector space"
+    ],
+    "reference_answer": "Dense retrievers are capable of capturing semantic matches to overcome the potential lexical gap. They work by mapping queries and documents into a shared, dense vector space, which allows document representations to be pre-computed and indexed.",
+    "difficulty": "hard",
+    "word_overlap": 0.5,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "Why did the researchers choose specific default settings for BM25 over the tuned ones when combining it with DeepCT?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      6
+    ],
+    "expected_keywords": [
+      "Anserini",
+      "MS MARCO",
+      "perform better"
+    ],
+    "reference_answer": "They used the default Anserini parameters because empirical testing showed they performed better than the tuned MS MARCO parameters in this specific combination.",
+    "difficulty": "hard",
+    "word_overlap": 0.4,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "Why might the Recall@k metric be misleading when a search task has more relevant documents than the top-k limit allows?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      20
+    ],
+    "expected_keywords": [
+      "counterintuitive",
+      "relevant",
+      "documents"
+    ],
+    "reference_answer": "If there are many relevant documents (more than k), even retrieving all of them results in a low maximum score because the denominator (total relevant docs) is large while the numerator is capped at k.",
+    "difficulty": "hard",
+    "word_overlap": 0.45,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "Why did the researchers decide to use nDCG@10 as the main way to measure performance instead of simpler checks like looking at the first few results?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      5
+    ],
+    "expected_keywords": [
+      "nDCG@10",
+      "graded relevance",
+      "binary"
+    ],
+    "reference_answer": "They chose nDCG@10 because it works for both simple and complex relevance judgments, unlike Precision/Recall which ignore rank order, or MRR/MAP which fail with graded relevance.",
+    "difficulty": "hard",
+    "word_overlap": 0.2,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "The paper mentions that datasets are messy and hard to compare. What specific standard format did BEIR adopt to fix this issue and make it easier to test models on many different collections?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      5
+    ],
+    "expected_keywords": [
+      "corpus",
+      "queries",
+      "qrels"
+    ],
+    "reference_answer": "BEIR introduced a standard format consisting of a corpus, queries, and qrels, converting existing datasets into this universal structure to speed up evaluation.",
+    "difficulty": "hard",
+    "word_overlap": 0.37,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "What specific limits did the researchers have to put on how much text they could feed into the transformer models during their experiments, and why?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      5
+    ],
+    "expected_keywords": [
+      "512",
+      "word pieces",
+      "length limitations"
+    ],
+    "reference_answer": "Due to length limitations of transformer-based networks, they only used the first 512 word pieces within all documents.",
+    "difficulty": "hard",
+    "word_overlap": 0.27,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "When setting up the basic BM25 search system, which specific software and parameter settings did the team find performed the best compared to alternatives like Elasticsearch?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      5
+    ],
+    "expected_keywords": [
+      "Anserini",
+      "Lucene",
+      "BM25"
+    ],
+    "reference_answer": "They used Anserini with default Lucene parameters (k=0.9 and b=0.4), finding it outperformed other configurations like Elasticsearch BM25 or RM3 expansion.",
+    "difficulty": "hard",
+    "word_overlap": 0.24,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "Does fine-tuning the TAS-B model with synthetic queries make it better at finding information in specific fields like finance or science, or does it hurt its performance on general topics like Wikipedia?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      8
+    ],
+    "expected_keywords": [
+      "GenQ",
+      "specialized",
+      "weaker"
+    ],
+    "reference_answer": "GenQ, which is TAS-B fine-tuned on synthetic data, outperforms the original TAS-B on specialized domains like scientific publications and finance, but performs weaker on broader domains like Wikipedia.",
+    "difficulty": "hard",
+    "word_overlap": 0.37,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "The authors chose not to provide error bars or standard deviations for their experimental results. What is the main practical reason they give for this omission?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      16
+    ],
+    "expected_keywords": [
+      "pre-trained",
+      "models",
+      "code"
+    ],
+    "reference_answer": "They relied on existing pre-trained models that lack the necessary training code, making re-training infeasible.",
+    "difficulty": "hard",
+    "word_overlap": 0.43,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "Why do researchers sometimes adjust the standard recall calculation so that it stops penalizing a system if a query has many more relevant results than the number of top hits being evaluated?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      21
+    ],
+    "expected_keywords": [
+      "unintuitive",
+      "capped",
+      "denominator"
+    ],
+    "reference_answer": "Standard recall can produce low and unintuitive scores when the total number of relevant documents exceeds the cutoff k, so the score is capped at k to avoid this distortion.",
+    "difficulty": "hard",
+    "word_overlap": 0.33,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "In the table comparing many different search systems across various datasets, what does the dagger symbol (‡) specifically indicate about the score it is attached to?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      24
+    ],
+    "expected_keywords": [
+      "in-domain",
+      "retrieval",
+      "performance"
+    ],
+    "reference_answer": "It indicates that the score represents in-domain retrieval performance.",
+    "difficulty": "hard",
+    "word_overlap": 0.2,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "When looking at the document length distributions for top retrieved items using the SBERT model, which specific similarity metric was used to generate the results shown in the bottom row of the plots?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      24
+    ],
+    "expected_keywords": [
+      "Dot-Prod.",
+      "SBERT",
+      "similarity"
+    ],
+    "reference_answer": "Dot-Prod.",
+    "difficulty": "hard",
+    "word_overlap": 0.41,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "What metric is used to calculate the scores presented in the large table of retrieval results for the BEIR datasets?",
+    "doc": "beir_thakur2021.pdf",
+    "expected_pages": [
+      24
+    ],
+    "expected_keywords": [
+      "Recall@100",
+      "metric",
+      "scores"
+    ],
+    "reference_answer": "Recall@100",
+    "difficulty": "hard",
+    "word_overlap": 0.5,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "Why do standard BERT-based ranking models take so much longer to process queries compared to earlier neural methods, and how much slower are they typically?",
+    "doc": "colbert_khattab2020.pdf",
+    "expected_pages": [
+      1
+    ],
+    "expected_keywords": [
+      "BERT",
+      "latency",
+      "computationally expensive"
+    ],
+    "reference_answer": "They require feeding each query-document pair through a massive neural network to compute a single score, making them 100-1000 times more computationally expensive than prior models.",
+    "difficulty": "hard",
+    "word_overlap": 0.4,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "Why do standard interaction-based search models struggle with real-world usage speed, and what is the tradeoff when trying to fix this by simplifying the model?",
+    "doc": "colbert_khattab2020.pdf",
+    "expected_pages": [
+      2
+    ],
+    "expected_keywords": [
+      "latency",
+      "precision",
+      "BERT"
+    ],
+    "reference_answer": "Interaction-based models are slow because they process query and document together, leading to high latency (tens of thousands of ms), which harms user experience and revenue. Simplifying models to reduce latency often significantly reduces search precision compared to deep models like BERT.",
+    "difficulty": "hard",
+    "word_overlap": 0.31,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "How much faster is ColBERT compared to previous BERT-based ranking methods, and what does that speed increase allow it to do with the MS MARCO dataset?",
+    "doc": "colbert_khattab2020.pdf",
+    "expected_pages": [
+      2
+    ],
+    "expected_keywords": [
+      "170x",
+      "3 hours",
+      "MS MARCO"
+    ],
+    "reference_answer": "ColBERT delivers over 170x speedup compared to existing BERT-based models. This efficiency allows it to index the entire MS MARCO collection of 9 million passages in about 3 hours using a single server with four GPUs.",
+    "difficulty": "hard",
+    "word_overlap": 0.46,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "How does the method duoBERT differ from using a standard BERT model for ranking, and what is the performance trade-off?",
+    "doc": "colbert_khattab2020.pdf",
+    "expected_pages": [
+      3
+    ],
+    "expected_keywords": [
+      "duoBERT",
+      "1% MRR@10",
+      "1.4×"
+    ],
+    "reference_answer": "duoBERT fine-tunes BERT to compare the relevance of two documents given a query, whereas standard BERT scores a single document. This approach gives a 1% MRR@10 advantage on MS MARCO but increases the computational cost by at least 1.4 times.",
+    "difficulty": "hard",
+    "word_overlap": 0.38,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "Why does the system add extra masked symbols to the end of a search query before processing it, and what does this help the system learn?",
+    "doc": "colbert_khattab2020.pdf",
+    "expected_pages": [
+      4
+    ],
+    "expected_keywords": [
+      "query augmentation",
+      "differentiable",
+      "expand"
+    ],
+    "reference_answer": "This technique, called query augmentation, allows the model to generate extra embeddings that act as a soft, differentiable way to expand the query with new terms or adjust the weight of existing terms based on how important they are for matching the document.",
+    "difficulty": "hard",
+    "word_overlap": 0.5,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "What is the main reason for using a method that sums up the best matches for each query word, rather than a more complex approach, when calculating how relevant a document is?",
+    "doc": "colbert_khattab2020.pdf",
+    "expected_pages": [
+      4
+    ],
+    "expected_keywords": [
+      "MaxSim",
+      "pruning",
+      "cheap"
+    ],
+    "reference_answer": "The summation of maximum similarity (MaxSim) method is chosen because it is a very cheap interaction mechanism and, more importantly, it is amenable to highly-efficient pruning for top-k retrieval, which allows for faster processing.",
+    "difficulty": "hard",
+    "word_overlap": 0.17,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "When measuring the total time it takes for ColBERT to produce a score, which part of the process accounts for the majority of the delay?",
+    "doc": "colbert_khattab2020.pdf",
+    "expected_pages": [
+      7
+    ],
+    "expected_keywords": [
+      "embeddings",
+      "GPU",
+      "transfer"
+    ],
+    "reference_answer": "The majority of the time is spent gathering, stacking, and transferring document embeddings to the GPU, rather than the actual query interaction computation.",
+    "difficulty": "hard",
+    "word_overlap": 0.42,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "Why does using ColBERT for searching directly from a large database work better than just using it to re-sort a smaller list of candidates?",
+    "doc": "colbert_khattab2020.pdf",
+    "expected_pages": [
+      9
+    ],
+    "expected_keywords": [
+      "recall",
+      "BM25",
+      "end-to-end"
+    ],
+    "reference_answer": "End-to-end retrieval improves recall, allowing the model to find relevant documents that were missed by the initial BM25 ranking.",
+    "difficulty": "hard",
+    "word_overlap": 0.42,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "How much of the original BERT architecture is actually needed for ColBERT to work well, and what happens if you remove the extra token-predicting layer?",
+    "doc": "colbert_khattab2020.pdf",
+    "expected_pages": [
+      9
+    ],
+    "expected_keywords": [
+      "5",
+      "query augmentation",
+      "MRR@10"
+    ],
+    "reference_answer": "A 5-layer BERT without the query augmentation component performs noticeably worse, showing that the specific setup of predicting next tokens helps maintain accuracy.",
+    "difficulty": "hard",
+    "word_overlap": 0.38,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "What is the trade-off when you shrink the size of the data stored for each document to save hard drive space?",
+    "doc": "colbert_khattab2020.pdf",
+    "expected_pages": [
+      9
+    ],
+    "expected_keywords": [
+      "27",
+      "MRR@10",
+      "24"
+    ],
+    "reference_answer": "Using smaller vectors (24-dimensional with 2-byte floats) reduces the storage footprint to 27 GiBs while only dropping the accuracy metric (MRR@10) by 1%.",
+    "difficulty": "hard",
+    "word_overlap": 0.25,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "How are the Wikipedia articles split into smaller parts for the retrieval system, and how do they handle the article titles during this process?",
+    "doc": "dpr_karpukhin2020.pdf",
+    "expected_pages": [
+      4
+    ],
+    "expected_keywords": [
+      "100 words",
+      "title",
+      "disjoint"
+    ],
+    "reference_answer": "Articles are split into disjoint blocks of 100 words, and each passage is prepended with the title of the source article and an [SEP] token.",
+    "difficulty": "hard",
+    "word_overlap": 0.42,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "For datasets where specific answer contexts aren't originally provided, how does the system decide which passage counts as the correct answer?",
+    "doc": "dpr_karpukhin2020.pdf",
+    "expected_pages": [
+      4
+    ],
+    "expected_keywords": [
+      "BM25",
+      "contains",
+      "answer"
+    ],
+    "reference_answer": "It uses the highest-ranked passage from BM25 that contains the answer as the positive passage, discarding the question if no top 100 retrieved passage has the answer.",
+    "difficulty": "hard",
+    "word_overlap": 0.5,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "Why does increasing the number of items processed together during training consistently make the retrieval model more accurate?",
+    "doc": "dpr_karpukhin2020.pdf",
+    "expected_pages": [
+      6
+    ],
+    "expected_keywords": [
+      "in-batch",
+      "negative",
+      "batch size"
+    ],
+    "reference_answer": "Using in-batch negative training allows the model to reuse other questions' positive passages as negative examples for the current question. This creates more training pairs without needing extra data, and the benefits grow as the batch size increases.",
+    "difficulty": "hard",
+    "word_overlap": 0.36,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "How do different methods for measuring the similarity between a question and a passage compare in terms of effectiveness?",
+    "doc": "dpr_karpukhin2020.pdf",
+    "expected_pages": [
+      6
+    ],
+    "expected_keywords": [
+      "L2",
+      "dot product",
+      "cosine"
+    ],
+    "reference_answer": "The L2 distance and dot product methods perform comparably well, and both are superior to using cosine similarity for this task.",
+    "difficulty": "hard",
+    "word_overlap": 0.44,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "Why doesn't using 100 passages always yield the best result for News QA, and what happens to accuracy if you reduce that number to 50?",
+    "doc": "dpr_karpukhin2020.pdf",
+    "expected_pages": [
+      8
+    ],
+    "expected_keywords": [
+      "optimal",
+      "marginal loss",
+      "exact match"
+    ],
+    "reference_answer": "For News QA, k=50 is optimal, and reducing it to 10 leads to only a marginal loss in exact match accuracy (dropping from 41.5 to 40.8 EM), which is comparable to ORQA's setup.",
+    "difficulty": "hard",
+    "word_overlap": 0.31,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "Does making the model architecture or the way we calculate similarity more complicated usually lead to better results for dense retrieval?",
+    "doc": "dpr_karpukhin2020.pdf",
+    "expected_pages": [
+      9
+    ],
+    "expected_keywords": [
+      "value",
+      "similarity",
+      "frameworks"
+    ],
+    "reference_answer": "No, empirical analysis shows that more complex model frameworks or similarity functions do not necessarily provide additional value.",
+    "difficulty": "hard",
+    "word_overlap": 0.33,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "If you train the question encoder without having the specific perfect context paragraph as a label, but instead using the best guess from a keyword search tool that contains the answer, how much does the top retrieval accuracy drop compared to using the true gold context?",
+    "doc": "dpr_karpukhin2020.pdf",
+    "expected_pages": [
+      12
+    ],
+    "expected_keywords": [
+      "44.9",
+      "43.9",
+      "natural questions"
+    ],
+    "reference_answer": "The Top-1 accuracy drops from 44.9 (Gold) to 43.9 (Dist. Sup.), a decrease of 1.0 point.",
+    "difficulty": "hard",
+    "word_overlap": 0.43,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "Which similarity metric, along with which loss function, achieved the highest Top-1 accuracy in the experiments comparing different mathematical approaches for measuring similarity?",
+    "doc": "dpr_karpukhin2020.pdf",
+    "expected_pages": [
+      12
+    ],
+    "expected_keywords": [
+      "dp",
+      "nll",
+      "44.9"
+    ],
+    "reference_answer": "The Dot Product (DP) similarity with Negative Log-Likelihood (NLL) loss achieved the highest Top-1 accuracy of 44.9.",
+    "difficulty": "hard",
+    "word_overlap": 0.47,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "What is the main difference between how the two main RAG variants decide which background information to use when generating an answer, specifically regarding whether they stick to one source or switch between them?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      3
+    ],
+    "expected_keywords": [
+      "same",
+      "different",
+      "document"
+    ],
+    "reference_answer": "RAG-Sequence uses the same retrieved document to predict the entire output sequence, while RAG-Token can select a different document for each individual token it generates.",
+    "difficulty": "hard",
+    "word_overlap": 0.29,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "When using the RAG system for classifying inputs rather than generating free text, why do the two different architectural approaches end up producing the same result?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      3
+    ],
+    "expected_keywords": [
+      "length",
+      "one",
+      "equivalent"
+    ],
+    "reference_answer": "In sequence classification, the target is treated as a sequence of length one (a single class label). Since there is only one token to generate, the distinction between using one document for the whole sequence or a different one for each token disappears, making the models equivalent.",
+    "difficulty": "hard",
+    "word_overlap": 0.5,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "Why is the component that represents the retrieved texts kept static during the learning phase instead of being updated along with the rest of the system?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      4
+    ],
+    "expected_keywords": [
+      "costly",
+      "index",
+      "fixed"
+    ],
+    "reference_answer": "Updating the document encoder is computationally expensive because it requires periodically rebuilding the document index, a step not found necessary for strong performance.",
+    "difficulty": "hard",
+    "word_overlap": 0.27,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "How are the raw Wikipedia articles prepared to fit into the retrieval index used for finding relevant information?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      4
+    ],
+    "expected_keywords": [
+      "100-word chunks",
+      "21M documents",
+      "disjoint"
+    ],
+    "reference_answer": "The articles are split into disjoint 100-word chunks, resulting in a total of 21M documents.",
+    "difficulty": "hard",
+    "word_overlap": 0.3,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "How does RAG's actual retrieval process compare to the manually selected evidence in the FEVER dataset in terms of finding the right articles?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      7
+    ],
+    "expected_keywords": [
+      "71%",
+      "90%",
+      "gold article"
+    ],
+    "reference_answer": "The top retrieved document is from a gold article in 71% of cases, and a gold article is present in the top 10 retrieved articles in 90% of cases.",
+    "difficulty": "hard",
+    "word_overlap": 0.43,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "Why is it a major advantage that the system's memory is made of raw text instead of abstract numeric codes?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      9
+    ],
+    "expected_keywords": [
+      "human-readable",
+      "interpretable",
+      "human-writable"
+    ],
+    "reference_answer": "It makes the memory human-readable, which provides interpretability, and human-writable, allowing users to update the model by editing the document index without retraining.",
+    "difficulty": "hard",
+    "word_overlap": 0.27,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "According to the summary, what did people say they preferred when comparing the combined system to the purely parametric BART model, and why?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      9
+    ],
+    "expected_keywords": [
+      "factual",
+      "specific",
+      "prefer"
+    ],
+    "reference_answer": "People preferred RAG's generation over purely parametric BART, finding RAG more factual and specific.",
+    "difficulty": "hard",
+    "word_overlap": 0.36,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "Why was it necessary to randomly swap the positions of the two compared text samples during the human factuality review?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      17
+    ],
+    "expected_keywords": [
+      "biases",
+      "screen",
+      "position"
+    ],
+    "reference_answer": "To avoid any biases for screen position",
+    "difficulty": "hard",
+    "word_overlap": 0.33,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "How does the performance of the RAG-Sequence model on Natural Questions compare to the T5-large model, and what does this suggest about the amount of adjustable size a model needs to answer real-world questions well?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      19
+    ],
+    "expected_keywords": [
+      "44.5",
+      "28.9",
+      "trainable parameters"
+    ],
+    "reference_answer": "RAG-Sequence scores 44.5 EM on Natural Questions, while T5-large (770M parameters) scores 28.9 EM. This indicates that hybrid models achieve strong performance with far fewer trainable parameters than comparable closed-book models.",
+    "difficulty": "hard",
+    "word_overlap": 0.38,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "What specific issue did the authors observe in preliminary experiments where the system failed to pick relevant information for a given input, leading it to perform the same as a model without any retrieval step?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      19
+    ],
+    "expected_keywords": [
+      "collapse",
+      "BART",
+      "regardless"
+    ],
+    "reference_answer": "The retrieval component would 'collapse' and learn to retrieve the same documents regardless of the input. Once this happened, the generator learned to ignore the documents, causing the model to perform equivalently to BART.",
+    "difficulty": "hard",
+    "word_overlap": 0.3,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
+    "verified": false
+  },
+  {
+    "question": "When the system's memory part fails to select diverse documents and instead repeats the same ones for different inputs, what factor in the task design might cause this failure?",
+    "doc": "rag_lewis2020.pdf",
+    "expected_pages": [
+      19
+    ],
+    "expected_keywords": [
+      "gradients",
+      "factual knowledge",
+      "target sequences"
+    ],
+    "reference_answer": "This collapse could be due to a less-explicit requirement for factual knowledge in some tasks, or longer target sequences, which result in less informative gradients for the retriever.",
+    "difficulty": "hard",
+    "word_overlap": 0.21,
+    "origin": "llm-draft:qwen/qwen3.8-27b",
     "verified": false
   }
 ]
