@@ -10,7 +10,7 @@ import streamlit as st
 # Import your production pipeline functions
 from config import get_secret
 from ingest import default_parser, file_digest, ingest_pdf
-from rag_app import rag_pipeline
+from agent import CITATION, build_agent, cited_numbers, normalize_citations, run
 from rerank import JinaReranker
 from retrieval import DEFAULT_EMBED_MODEL, LIBRARY_OWNER, HybridIndex, Retriever, connect, library_collection
 
@@ -110,43 +110,98 @@ with st.sidebar:
     documents = sorted(index.documents(owners=visible_owners),
                        key=lambda d: (d["owner"] == LIBRARY_OWNER, d.get("paper") or d["source"]))
     st.caption("Search in:")
-    selected_docs = [
-        d["doc_id"] for d in documents
+    selected = [
+        d for d in documents
         if st.checkbox((d.get("paper") or d["source"]) + (" (yours)" if d["owner"] == owner else ""),
                        value=True, key=f"doc-{d['doc_id']}")
     ]
 
-# --- MAIN: question and answer ---
+    st.divider()
+    if st.button("New chat", width="stretch"):
+        st.session_state.messages = []
+
+
+def link_citations(text, message_index):
+    # [3] -> a link that jumps to source 3 of this answer.
+    return CITATION.sub(lambda m: f"[[{m.group(1)}]](#src-{message_index}-{m.group(1)})", text)
+
+
+def render_sources(sources, answer, message_index):
+    """Cited sources first, each with an anchor the answer's [n] links point at."""
+    cited = [n for n in cited_numbers(answer) if 1 <= n <= len(sources)]
+    for n in cited:
+        chunk = sources[n - 1]
+        section = f" · {chunk['section']}" if chunk.get("section") else ""
+        st.markdown(f'<a id="src-{message_index}-{n}"></a>', unsafe_allow_html=True)
+        with st.expander(f"[{n}] {chunk.get('paper') or chunk['source']}, page {chunk['page']}{section}"):
+            # Chunks are markdown, so tables render as tables.
+            st.markdown(chunk["text"])
+    others = [(n, c) for n, c in enumerate(sources, start=1) if n not in cited]
+    if others:
+        with st.expander(f"Other passages searched ({len(others)})"):
+            for n, chunk in others:
+                st.markdown(f"**[{n}] {chunk.get('paper') or chunk['source']}, page {chunk['page']}**")
+                st.markdown(chunk["text"])
+
+
+# --- MAIN: chat ---
 st.title("RAG Research Assistant")
 st.caption("Ask questions across the research papers in the library, or add your own PDF in the sidebar. "
-           "Answers come only from the documents and cite their sources.")
+           "Answers come only from the documents and cite their sources; follow-up questions work too.")
 
-# Text input for the user's question
-question = st.text_input("Enter your research question:",
-                         placeholder="e.g., How does ColBERT's late interaction differ from DPR?")
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
-# Search button to trigger execution
-if st.button("Ask", type="primary"):
-    if question.strip() == "":
-        st.warning("Please enter a valid question.")
-    elif not selected_docs:
+# Replay the conversation so far
+for i, message in enumerate(st.session_state.messages):
+    with st.chat_message(message["role"]):
+        if message["role"] == "assistant":
+            st.caption(message["trace"])
+            st.markdown(link_citations(message["content"], i))
+            render_sources(message["sources"], message["content"], i)
+        else:
+            st.markdown(message["content"])
+
+question = st.chat_input("Ask about the papers, e.g. How does ColBERT's late interaction differ from DPR?")
+if question:
+    if not selected:
         st.warning("Select at least one document in the sidebar.")
-    else:
-        with st.spinner("Searching the library and generating an answer..."):
-            try:
-                answer, sources = rag_pipeline(question, get_retriever(), owners=visible_owners, doc_ids=selected_docs)
+        st.stop()
 
-                # Display the response cleanly using Markdown
-                st.markdown("### Answer")
-                st.write(answer)
+    history = [{"role": m["role"], "content": m["content"]} for m in st.session_state.messages]
+    st.session_state.messages.append({"role": "user", "content": question})
+    with st.chat_message("user"):
+        st.markdown(question)
 
-                # Show the retrieved source chunks the answer is grounded in,
-                # so the user can verify it against the original document.
-                with st.expander(f"📄 Sources ({len(sources)} chunks retrieved)"):
-                    for i, chunk in enumerate(sources, start=1):
-                        section = f" · {chunk['section']}" if chunk.get("section") else ""
-                        st.markdown(f"**{i}. {chunk.get('paper') or chunk['source']}, page {chunk['page']}**{section}")
-                        # Chunks are markdown, so tables render as tables.
-                        st.markdown(chunk["text"])
-            except Exception as e:
-                st.error(f"An error occurred during execution: {e}")
+    with st.chat_message("assistant"):
+        agent = build_agent(get_retriever(),
+                            filters={"owners": visible_owners, "doc_ids": [d["doc_id"] for d in selected]},
+                            library_titles=[d.get("paper") or d["source"] for d in selected])
+        status = st.status("Researching...")
+        placeholder = st.empty()
+        text, final = "", {}
+        try:
+            for kind, value in run(agent, question, history):
+                if kind == "status":
+                    status.update(label=value + "...")
+                    status.write(value)
+                elif kind == "token":
+                    text += value
+                    placeholder.markdown(normalize_citations(text) + "▌")
+                else:
+                    final = value
+        except Exception as e:
+            status.update(label="Something went wrong", state="error")
+            st.error(f"An error occurred during execution: {e}")
+            st.stop()
+
+        searches = final.get("searched", [])
+        trace = (f"Searched {len(searches)} quer{'y' if len(searches) == 1 else 'ies'}, "
+                 f"read {len(final.get('sources', []))} passages" if searches else "No search needed")
+        status.update(label=trace, state="complete")
+        answer = final.get("answer", normalize_citations(text))
+        message_index = len(st.session_state.messages)
+        placeholder.markdown(link_citations(answer, message_index))
+        render_sources(final.get("sources", []), answer, message_index)
+        st.session_state.messages.append({"role": "assistant", "content": answer,
+                                          "sources": final.get("sources", []), "trace": trace})

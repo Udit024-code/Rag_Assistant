@@ -1,0 +1,22 @@
+[
+  {"question": "How does ColBERT's late interaction differ from DPR's dual encoder?",
+   "docs": ["colbert_khattab2020.pdf", "dpr_karpukhin2020.pdf"]},
+  {"question": "Which retriever does RAG use, and how was that retriever originally trained?",
+   "docs": ["rag_lewis2020.pdf", "dpr_karpukhin2020.pdf"]},
+  {"question": "How does BM25 compare with DPR on Natural Questions, and how does BM25 hold up in BEIR's zero-shot evaluation?",
+   "docs": ["dpr_karpukhin2020.pdf", "beir_thakur2021.pdf"]},
+  {"question": "Compare the training data and negatives used to train DPR and ColBERT.",
+   "docs": ["dpr_karpukhin2020.pdf", "colbert_khattab2020.pdf"]},
+  {"question": "How well does ColBERT generalize in BEIR's zero-shot benchmark compared with its own MS MARCO results?",
+   "docs": ["beir_thakur2021.pdf", "colbert_khattab2020.pdf"]},
+  {"question": "What generator model does RAG use, and how does DPR index its Wikipedia passages?",
+   "docs": ["rag_lewis2020.pdf", "dpr_karpukhin2020.pdf"]},
+  {"question": "Compare the end-to-end question answering results of RAG and of DPR's reader on Natural Questions.",
+   "docs": ["rag_lewis2020.pdf", "dpr_karpukhin2020.pdf"]},
+  {"question": "What do RAG-Sequence and ColBERT each produce for a query: generated text or a ranking?",
+   "docs": ["rag_lewis2020.pdf", "colbert_khattab2020.pdf"]},
+  {"question": "What index sizes or memory costs do BEIR and DPR report for dense retrieval?",
+   "docs": ["beir_thakur2021.pdf", "dpr_karpukhin2020.pdf"]},
+  {"question": "How do DPR, ColBERT and BEIR each describe the weaknesses of BM25 lexical matching?",
+   "docs": ["dpr_karpukhin2020.pdf", "colbert_khattab2020.pdf", "beir_thakur2021.pdf"]}
+]

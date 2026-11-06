@@ -1,6 +1,6 @@
 # RAG Research Assistant
 
-A Retrieval-Augmented Generation (RAG) app for **asking plain-English questions across a library of research papers**, including PDFs you upload yourself. Answers are grounded strictly in the documents and cite the **paper, section and page**, so every response is verifiable.
+A Retrieval-Augmented Generation (RAG) **research chatbot** for a library of papers, including PDFs you upload yourself. An agent plans the searches each question needs, and answers stream in with **numbered citations** that link to the exact passage (paper, section and page), so every claim is verifiable. Follow-up questions work.
 
 🔗 **Live demo:** deployed on [Streamlit Community Cloud](https://streamlit.io/cloud)
 
@@ -10,8 +10,8 @@ A Retrieval-Augmented Generation (RAG) app for **asking plain-English questions 
 
 1. The app ships with a shared library of four retrieval papers (RAG, DPR, ColBERT, BEIR); you can add your own PDF, which only you can search and which is deleted after 24 hours.
 2. Each PDF is parsed into markdown (tables included, OCR for scanned pages), split into chunks along the paper's own sections, and stored in Qdrant with two vectors: a dense embedding and BM25 keyword weights.
-3. You ask a question; hybrid search finds candidates by meaning *and* by exact terms, and a cross-encoder reranks them.
-4. An LLM answers **using only those chunks** and cites its sources. If the answer isn't in the documents, it says so instead of guessing.
+3. You ask a question in the chat. A LangGraph agent rewrites follow-ups into standalone questions, splits comparisons into one search per item, runs hybrid search (meaning *and* exact terms) with cross-encoder reranking, and checks the evidence covers every part before answering.
+4. An LLM answers **using only those passages**, citing them as [1], [2]. If something isn't in the documents, it says so instead of guessing.
 
 ---
 
@@ -26,11 +26,18 @@ PDF → parse to per-page markdown (LlamaParse, or local pymupdf4llm)
     → Qdrant Cloud, tagged with an owner (shared library or one visitor)
 ```
 
-**Query (per question)**
+**Query (per chat message): a LangGraph agent**
 ```
-question → dense search + BM25 search in Qdrant (top 30 each)
-         → Reciprocal Rank Fusion → Jina reranker → top 5 chunks
-         → LLM generates a grounded, cited answer
+plan ──► retrieve ──► check ──► answer (streamed, cites [1] [2] ...)
+  │          ▲          │
+  │          └──────────┘  evidence missing → one more search round
+  └──► answer              greetings and thanks skip the search
+
+plan:     rewrite follow-ups ("and BM25?") into a standalone question;
+          split comparisons / multi-part questions into one search each
+retrieve: per search: dense + BM25 in Qdrant (top 30 each) → RRF fusion
+          → Jina reranker → top 4; results interleaved, up to 10 passages
+check:    does the evidence cover every part? if not, which searches would
 ```
 
 If the embedding API is unavailable, search falls back to BM25 + reranking (still Hit@5 1.00 / MRR 0.93 on the eval set), and if the reranker is unavailable the fused order is kept.
@@ -47,7 +54,8 @@ If the embedding API is unavailable, search falls back to BM25 + reranking (stil
 | Keyword search | BM25 via `fastembed`, IDF computed by Qdrant | Finds exact terms (dataset names, metrics, numbers) that embeddings blur |
 | Vector database | **Qdrant Cloud** (free tier), hybrid query with RRF fusion | Persistent library; dense + sparse search and fusion in one request |
 | Reranker | **Jina `jina-reranker-v3`** | Cross-encoder reads query and chunk together; lifts weaker first stages a lot |
-| LLM | `gpt-oss-20b` via **Groq** | Fast inference with a free tier |
+| Agent | **LangGraph** state machine (plan → retrieve → check → answer) | Explicit, inspectable control flow; streams progress and tokens to the UI |
+| LLM | `gpt-oss-120b` for answers, `gpt-oss-20b` for planning, via **Groq** | Free tier; each model has its own rate limit, so either falls back to the other |
 | UI | `Streamlit` | Quickest path to a shareable web app |
 
 ---
@@ -55,18 +63,22 @@ If the embedding API is unavailable, search falls back to BM25 + reranking (stil
 ## Project structure
 
 ```
-├── app.py            # Streamlit UI — library, uploads, questions
+├── app.py            # Streamlit chat UI — library, uploads, streamed cited answers
+├── agent.py          # LangGraph research agent: plan, retrieve, check, answer
+├── llm.py            # Groq calls with model fallback (JSON plans, streamed answers)
 ├── ingest.py         # PDF parsing (LlamaParse / pymupdf4llm) + section-aware chunking
 ├── embeddings.py     # Gemini and local embedding models behind one interface, disk-cached
 ├── retrieval.py      # Qdrant hybrid index (dense + BM25, RRF) and the Retriever
 ├── rerank.py         # Jina cross-encoder reranking, cached, with fallback
-├── rag_app.py        # Prompt construction + LLM answer generation
+├── rag_app.py        # Single-search RAG pipeline (used by evaluate.py --answers)
 ├── config.py         # API keys from .env or Streamlit secrets
 ├── index_library.py  # Adds PDFs to the shared library in Qdrant Cloud
 ├── pipeline.py       # Original pdfplumber + sentence-window pipeline (baseline)
 ├── evaluate.py       # Retrieval evaluation harness (Hit@k, MRR)
 ├── eval/
 │   ├── testset.json         # labelled questions (paper + page)
+│   ├── comparisons.json     # questions needing evidence from 2-3 papers
+│   ├── compare_agent.py     # paper coverage: single search vs the agent
 │   ├── download_docs.py     # fetches the 4 eval papers
 │   ├── generate_testset.py  # drafts questions with an LLM
 │   └── review_app.py        # click-through review of drafted questions
@@ -148,18 +160,25 @@ Things that did **not** help, kept here because they shaped the design:
 - **Prepending "paper: ... section: ..." to the embedded text**: lower in all five pairings tested with bge-small; the shared title words make one paper's chunks look alike. Still recorded per chunk for citations and the LLM prompt.
 - **Reranking on top of gemini-embedding-2 hybrid**: no gain (MRR 0.95 either way). It is kept as a safety net, because it brings the BM25-only fallback from 0.85 to 0.93.
 
-### Known limitation
+### Comparison questions: single search vs the agent
 
-Questions comparing two papers ("How does ColBERT's late interaction differ from DPR?") can retrieve chunks from only one of them, and the LLM then fills the gap from its own memory, sometimes wrongly. Splitting such questions into one search per paper, and measuring answer faithfulness, are the next steps.
+The test set above only has single-page questions. `eval/compare_agent.py` scores 10 questions that each need evidence from 2-3 papers ("How does ColBERT's late interaction differ from DPR?"):
+
+| Method | All needed papers in the evidence | Passages for the least-covered paper |
+|---|---|---|
+| Single search, top 5 (Phase 2 app) | 4/10 | 0.6 |
+| Single search, top 10 | 10/10 | 2.3 |
+| **Agent** (decomposed searches, up to 10 passages) | **10/10** | **3.7** |
+
+The Phase 2 app answered "ColBERT vs DPR" from ColBERT passages alone and made up DPR's half; most of that was the top-5 cut. At an equal 10-passage budget, single search already reaches every paper, and the agent's gain is balance: ~60% more evidence for the weakest side of each comparison. Its other benefits (follow-up rewriting, skipping search for small talk, a second round when evidence is missing) cost two small LLM calls per question.
 
 ---
 
 ## Possible improvements
 
-- Agentic retrieval: decompose comparison and multi-part questions into sub-queries
-- Conversational memory for multi-turn follow-ups, streamed answers
-- Inline [1][2] citations linked to the exact passage
-- LLM-judged answer faithfulness in the evaluation
+- LLM-judged answer faithfulness and citation accuracy in the evaluation
+- Harder, hand-verified questions (the current set saturates at Hit@5 1.00)
+- Highlighting the exact sentence each citation supports
 
 ---
 
