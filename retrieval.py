@@ -27,7 +27,7 @@ MODES = ('dense', 'bm25', 'hybrid')
 CANDIDATES = 30   # first-stage results handed to the reranker
 
 # Chunk fields stored in Qdrant; embed_text is only needed at indexing time.
-PAYLOAD_FIELDS = ('chunk_id', 'doc_id', 'text', 'source', 'paper', 'section', 'page', 'char_count')
+PAYLOAD_FIELDS = ('chunk_id', 'doc_id', 'text', 'source', 'paper', 'section', 'page', 'char_count', 'is_table')
 
 
 @lru_cache(maxsize=None)

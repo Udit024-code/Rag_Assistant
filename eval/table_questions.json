@@ -1,0 +1,182 @@
+[
+  {
+    "question": "In the BEIR paper, what is reported for \"Sparse DPR\" on \"Signal-1M (RT)\" in the table of In-domain and zero-shot retrieval performance on BEIR datasets?",
+    "answer": "0.162",
+    "doc": "beir_thakur2021.pdf",
+    "page": 24,
+    "caption": "Table 9: In-domain and zero-shot retrieval performance on BEIR datasets. Scores denote Recall@100. The best retrieval performance on a given dataset is marked in bold, and the second best performance is underlined. ‡ indicates in-domain retrieval performance. shows the capped Recall@100 score (Appendex G).",
+    "row": "Signal-1M (RT)",
+    "column": "Sparse DPR"
+  },
+  {
+    "question": "In the ColBERT paper, what is reported for \"MRR@10\" on \"DeepCT\" in the table of Results on TREC CAR?",
+    "answer": "33.2",
+    "doc": "colbert_khattab2020.pdf",
+    "page": 8,
+    "caption": "Table 3: Results on TREC CAR.",
+    "row": "DeepCT",
+    "column": "MRR@10"
+  },
+  {
+    "question": "In the DPR (Dense Passage Retrieval) paper, what is reported for \"Test\" on \"WebQuestions\" in the table of Number of questions in each QA dataset?",
+    "answer": "361",
+    "doc": "dpr_karpukhin2020.pdf",
+    "page": 4,
+    "caption": "Table 1: Number of questions in each QA dataset. The two columns of Train denote the original training examples in the dataset and the actual questions used for training DPR after filtering. See text for more details.",
+    "row": "WebQuestions",
+    "column": "Test"
+  },
+  {
+    "question": "In the RAG (Retrieval-Augmented Generation) paper, what is reported for \"WQ\" on \"RAG-Token-Frozen\" in the table of Ablations on the dev set?",
+    "answer": "37.1",
+    "doc": "rag_lewis2020.pdf",
+    "page": 8,
+    "caption": "Table 6: Ablations on the dev set. As FEVER is a classification task, both RAG models are equivalent.",
+    "row": "RAG-Token-Frozen",
+    "column": "WQ"
+  },
+  {
+    "question": "In the BEIR paper, what is reported for \"Test Avg. D / Q\" on \"Wikipedia\" in the table of Statistics of datasets in BEIR benchmark?",
+    "answer": "20.13",
+    "doc": "beir_thakur2021.pdf",
+    "page": 4,
+    "caption": "Table 1: Statistics of datasets in BEIR benchmark. Few datasets contain documents without titles. Relevancy indicates the query-document relation: binary (relevant, non-relevant) or graded into sub-levels. Avg. D/Q indicates the average relevant documents per query.",
+    "row": "Wikipedia",
+    "column": "Test Avg. D / Q"
+  },
+  {
+    "question": "In the ColBERT paper, what is reported for \"MRR@10 (Eval)\" on \"BERTlarge [25]\" in the table of \"Re-ranking\" results on MS MARCO?",
+    "answer": "35.9",
+    "doc": "colbert_khattab2020.pdf",
+    "page": 7,
+    "caption": "Table 1: \"Re-ranking\" results on MS MARCO. Each neural model re-ranks the official top-1000 results produced by BM25. Latency is reported for re-ranking only. To obtain the end-to-end latency in Figure 1, we add the BM25 latency from Table 2.",
+    "row": "BERTlarge [25]",
+    "column": "MRR@10 (Eval)"
+  },
+  {
+    "question": "In the DPR (Dense Passage Retrieval) paper, what is reported for \"NQ\" on \"Single\" in the table of End-to-end QA (Exact Match) Accuracy?",
+    "answer": "28.1",
+    "doc": "dpr_karpukhin2020.pdf",
+    "page": 8,
+    "caption": "Table 4: End-to-end QA (Exact Match) Accuracy. The first block of results are copied from their cited papers. REALMWiki and REALMNews are the same model but pretrained on Wikipedia and CC-News, respectively. Single and Multi denote that our Dense Passage Retriever (DPR) is trained using individual or combined training datasets (all except SQuAD). For WQ and TREC in the Multi setting, we fine-tune the reader trained on NQ.",
+    "row": "Single",
+    "column": "NQ"
+  },
+  {
+    "question": "In the RAG (Retrieval-Augmented Generation) paper, what is reported for \"Test\" on \"MS-MARCO\" in the table of Number of instances in the datasets used?",
+    "answer": "101093",
+    "doc": "rag_lewis2020.pdf",
+    "page": 19,
+    "caption": "Table 7: Number of instances in the datasets used. A hidden subset of this data is used for evaluation",
+    "row": "MS-MARCO",
+    "column": "Test"
+  },
+  {
+    "question": "In the BEIR paper, what is reported for \"Sparse docT5query\" on \"Robust04\" in the table of In-domain and zero-shot retrieval performance on BEIR datasets?",
+    "answer": "0.357",
+    "doc": "beir_thakur2021.pdf",
+    "page": 24,
+    "caption": "Table 9: In-domain and zero-shot retrieval performance on BEIR datasets. Scores denote Recall@100. The best retrieval performance on a given dataset is marked in bold, and the second best performance is underlined. ‡ indicates in-domain retrieval performance. shows the capped Recall@100 score (Appendex G).",
+    "row": "Robust04",
+    "column": "Sparse docT5query"
+  },
+  {
+    "question": "In the ColBERT paper, what is reported for \"MRR@10 (Eval)\" on \"Duet\" in the table of \"Re-ranking\" results on MS MARCO?",
+    "answer": "24.5",
+    "doc": "colbert_khattab2020.pdf",
+    "page": 7,
+    "caption": "Table 1: \"Re-ranking\" results on MS MARCO. Each neural model re-ranks the official top-1000 results produced by BM25. Latency is reported for re-ranking only. To obtain the end-to-end latency in Figure 1, we add the BM25 latency from Table 2.",
+    "row": "Duet",
+    "column": "MRR@10 (Eval)"
+  },
+  {
+    "question": "In the DPR (Dense Passage Retrieval) paper, what is reported for \"Retrieval Accuracy Top-5\" on \"DP\" in the table of Retrieval Top-k accuracy on the development set of Natural Questions using different similarity and loss functions?",
+    "answer": "66.8",
+    "doc": "dpr_karpukhin2020.pdf",
+    "page": 12,
+    "caption": "Table 6: Retrieval Top-k accuracy on the development set of Natural Questions using different similarity and loss functions.",
+    "row": "DP",
+    "column": "Retrieval Accuracy Top-5"
+  },
+  {
+    "question": "In the RAG (Retrieval-Augmented Generation) paper, what is reported for \"Jeopardy QGen\" on \"BART\" in the table of Ratio of distinct to total tri-grams for generation tasks?",
+    "answer": "70.7%",
+    "doc": "rag_lewis2020.pdf",
+    "page": 8,
+    "caption": "Table 5: Ratio of distinct to total tri-grams for generation tasks.",
+    "row": "BART",
+    "column": "Jeopardy QGen"
+  },
+  {
+    "question": "In the BEIR paper, what is reported for \"Dense GenQ\" on \"TREC-COVID\" in the table of In-domain and zero-shot performances on BEIR benchmark?",
+    "answer": "0.619",
+    "doc": "beir_thakur2021.pdf",
+    "page": 7,
+    "caption": "Table 2: In-domain and zero-shot performances on BEIR benchmark. All scores denote nDCG@10. The best score on a given dataset is marked in bold, and the second best is underlined. Corresponding Recall@100 performances can be found in Table 9. ‡ indicates the in-domain performances.",
+    "row": "TREC-COVID",
+    "column": "Dense GenQ"
+  },
+  {
+    "question": "In the ColBERT paper, what is reported for \"Recall@200\" on \"doc2query\" in the table of \"Re-ranking\" results on MS MARCO?",
+    "answer": "77.9",
+    "doc": "colbert_khattab2020.pdf",
+    "page": 7,
+    "caption": "Table 1: \"Re-ranking\" results on MS MARCO. Each neural model re-ranks the official top-1000 results produced by BM25. Latency is reported for re-ranking only. To obtain the end-to-end latency in Figure 1, we add the BM25 latency from Table 2.",
+    "row": "doc2query",
+    "column": "Recall@200"
+  },
+  {
+    "question": "In the DPR (Dense Passage Retrieval) paper, what is reported for \"TREC\" on \"Multi\" in the table of End-to-end QA (Exact Match) Accuracy?",
+    "answer": "50.6",
+    "doc": "dpr_karpukhin2020.pdf",
+    "page": 8,
+    "caption": "Table 4: End-to-end QA (Exact Match) Accuracy. The first block of results are copied from their cited papers. REALMWiki and REALMNews are the same model but pretrained on Wikipedia and CC-News, respectively. Single and Multi denote that our Dense Passage Retriever (DPR) is trained using individual or combined training datasets (all except SQuAD). For WQ and TREC in the Multi setting, we fine-tune the reader trained on NQ.",
+    "row": "Multi",
+    "column": "TREC"
+  },
+  {
+    "question": "In the RAG (Retrieval-Augmented Generation) paper, what is reported for \"CT\" on \"RAG-Token\" in the table of Open-Domain QA Test Scores?",
+    "answer": "50.0",
+    "doc": "rag_lewis2020.pdf",
+    "page": 6,
+    "caption": "Table 1: Open-Domain QA Test Scores. For TQA, left column uses the standard test set for Open-Domain QA, right column uses the TQA-Wiki test set. See Appendix D for further details.",
+    "row": "RAG-Token",
+    "column": "CT"
+  },
+  {
+    "question": "In the BEIR paper, what is reported for \"Sparse SPARTA\" on \"SCIDOCS\" in the table of In-domain and zero-shot performances on BEIR benchmark?",
+    "answer": "0.126",
+    "doc": "beir_thakur2021.pdf",
+    "page": 7,
+    "caption": "Table 2: In-domain and zero-shot performances on BEIR benchmark. All scores denote nDCG@10. The best score on a given dataset is marked in bold, and the second best is underlined. Corresponding Recall@100 performances can be found in Table 9. ‡ indicates the in-domain performances.",
+    "row": "SCIDOCS",
+    "column": "Sparse SPARTA"
+  },
+  {
+    "question": "In the ColBERT paper, what is reported for \"MAP\" on \"BM25 + BERTbase\" in the table of Results on TREC CAR?",
+    "answer": "31.0",
+    "doc": "colbert_khattab2020.pdf",
+    "page": 8,
+    "caption": "Table 3: Results on TREC CAR.",
+    "row": "BM25 + BERTbase",
+    "column": "MAP"
+  },
+  {
+    "question": "In the DPR (Dense Passage Retrieval) paper, what is reported for \"Top-5\" on \"Gold\" in the table of Comparison of different training schemes, measured as top-k retrieval accuracy on Natural Questions (development set)?",
+    "answer": "55.8",
+    "doc": "dpr_karpukhin2020.pdf",
+    "page": 6,
+    "caption": "Table 3: Comparison of different training schemes, measured as top-k retrieval accuracy on Natural Questions (development set). #N: number of negative examples, IB: in-batch training. G.+BM25(1) and G.+BM25(2) denote in-batch training with 1 or 2 additional BM25 negatives, which serve as negative passages for all questions in the batch.",
+    "row": "Gold",
+    "column": "Top-5"
+  },
+  {
+    "question": "In the RAG (Retrieval-Augmented Generation) paper, what is reported for \"FVR3 R-L\" on \"RAG-Seq.\" in the table of Generation and classification Test Scores?",
+    "answer": "40.8",
+    "doc": "rag_lewis2020.pdf",
+    "page": 6,
+    "caption": "Table 2: Generation and classification Test Scores. MS-MARCO SotA is [4], FEVER-3 is [68] and FEVER-2 is [57] Uses gold context/evidence. Best model without gold access underlined.",
+    "row": "RAG-Seq.",
+    "column": "FVR3 R-L"
+  }
+]

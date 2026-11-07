@@ -25,6 +25,7 @@ import re
 from llama_index.core import Document
 from llama_index.core.node_parser import SentenceSplitter
 from llama_index.core.schema import MetadataMode
+from llama_index.core.utils import get_tokenizer
 
 from config import get_secret
 
@@ -38,6 +39,12 @@ PARSERS = ('llamaparse', 'pymupdf', 'pdfplumber')
 # Best of 128/192/256/384/512 on the eval set (LlamaParse + bge-small).
 DEFAULT_CHUNK_TOKENS = 192
 DEFAULT_CHUNK_OVERLAP = 24
+
+# Tables are chunked separately: big enough to keep many rows with their
+# header and caption (gemini-embedding-2 reads up to 8K tokens).
+TABLE_CHUNK_TOKENS = 512
+TABLE_SEPARATOR_RE = re.compile(r'^\|(\s*:?-+:?\s*\|)+\s*$')
+TABLE_CAPTION_RE = re.compile(r'^\W*table\s+\d+\s*[:.]', re.IGNORECASE)
 
 # Pages with less text than this are treated as scanned (image-only).
 MIN_TEXT_CHARS = 50
@@ -179,44 +186,141 @@ def split_sections(pages):
     return sections
 
 
+def split_tables(text):
+    """Split section text into prose and tables.
+
+    Returns [{'kind': 'text', 'text'}] and [{'kind': 'table', 'caption',
+    'header', 'rows'}] blocks in order. header is [header row, separator], or
+    [] for a table continued from the previous page. caption is the nearest
+    "Table N:" line within four lines above or below.
+    """
+    lines = text.splitlines()
+    blocks, prose, i = [], [], 0
+    while i < len(lines):
+        if not lines[i].strip().startswith('|'):
+            prose.append(lines[i])
+            i += 1
+            continue
+        start = i
+        while i < len(lines) and lines[i].strip().startswith('|'):
+            i += 1
+        table = lines[start:i]
+        has_header = len(table) >= 2 and TABLE_SEPARATOR_RE.match(table[1].strip())
+        nearby = prose[-4:][::-1] + lines[i:i + 4]
+        caption = next((l.strip() for l in nearby if TABLE_CAPTION_RE.match(clean_inline(l))), None)
+        if prose:
+            blocks.append({'kind': 'text', 'text': '\n'.join(prose)})
+            prose = []
+        blocks.append({'kind': 'table', 'caption': caption,
+                       'header': table[:2] if has_header else [], 'rows': table[2:] if has_header else table})
+    if prose:
+        blocks.append({'kind': 'text', 'text': '\n'.join(prose)})
+    return blocks
+
+
+def table_chunk_texts(caption, header, rows, max_tokens=TABLE_CHUNK_TOKENS):
+    """Split a table by rows, repeating the caption and header in every piece.
+
+    Without them a piece is a grid of numbers: the LLM can't tell which
+    column (model) or metric a value belongs to.
+    """
+    count = lambda lines: len(get_tokenizer()('\n'.join(lines)))
+    prefix = ([caption] if caption else []) + header
+    budget = max(max_tokens - count(prefix), 1)
+    groups, current = [], []
+    for row in rows:
+        if current and count(current + [row]) > budget:
+            groups.append(current)
+            current = []
+        current.append(row)
+    if current:
+        groups.append(current)
+    return ['\n'.join(prefix + group) for group in groups]
+
+
 def chunk_pages(pages, source, chunk_tokens=DEFAULT_CHUNK_TOKENS, chunk_overlap=DEFAULT_CHUNK_OVERLAP,
-                first_chunk_id=0, embed_context=False):
+                first_chunk_id=0, embed_context=False, table_aware=True):
+    """Section-aware chunks. table_aware=False chunks tables like prose (the old behaviour)."""
     sections = split_sections(pages)
     title = next((s['title'] for s in sections if s['title']), None) or os.path.splitext(source)[0]
-
-    documents = []
-    for s in sections:
-        doc = Document(text=s['text'], metadata={'paper': title, 'section': s['section'], 'source': source, 'page': s['page']})
-        # Paper title and section can go into the embedded text; filename and
-        # page number are for citations only.
-        doc.excluded_embed_metadata_keys = ['source', 'page']
-        doc.excluded_llm_metadata_keys = ['source', 'page']
-        documents.append(doc)
-
     # chunk_size counts metadata too, so the embedded text stays within budget.
     splitter = SentenceSplitter(chunk_size=chunk_tokens, chunk_overlap=chunk_overlap)
-    nodes = splitter.get_nodes_from_documents(documents)
-
     embed_mode = MetadataMode.EMBED if embed_context else MetadataMode.NONE
+
     chunks = []
-    for i, node in enumerate(nodes):
+
+    def add(text, embed_text, section, page, is_table=False):
         chunks.append({
-            'chunk_id': first_chunk_id + i,
-            'text': node.get_content(metadata_mode=MetadataMode.NONE),
-            'embed_text': clean_inline(node.get_content(metadata_mode=embed_mode)),
+            'chunk_id': first_chunk_id + len(chunks),
+            'text': text,
+            'embed_text': embed_text,
             'source': source,
-            'paper': node.metadata['paper'],
-            'section': node.metadata['section'],
-            'page': node.metadata['page'],
-            'char_count': len(node.text),
+            'paper': title,
+            'section': section['section'],
+            'page': page,
+            'char_count': len(text),
+            'is_table': is_table,
         })
+
+    last_table = None   # header + caption, for tables continued on the next page
+    for s in sections:
+        blocks = split_tables(s['text']) if table_aware else [{'kind': 'text', 'text': s['text']}]
+        for block in blocks:
+            if block['kind'] == 'table':
+                if not block['header'] and last_table and last_table['section'] == s['section']:
+                    block = {**block, 'header': last_table['header'], 'caption': block['caption'] or last_table['caption']}
+                elif block['header']:
+                    last_table = {'section': s['section'], 'header': block['header'], 'caption': block['caption']}
+                for text in table_chunk_texts(block['caption'], block['header'], block['rows']):
+                    add(text, clean_inline(text), s, s['page'], is_table=True)
+                continue
+            if not block['text'].strip():
+                continue
+            doc = Document(text=block['text'], metadata={'paper': title, 'section': s['section'], 'source': source, 'page': s['page']})
+            # Paper title and section can go into the embedded text; filename and
+            # page number are for citations only.
+            doc.excluded_embed_metadata_keys = ['source', 'page']
+            doc.excluded_llm_metadata_keys = ['source', 'page']
+            for node in splitter.get_nodes_from_documents([doc]):
+                add(node.get_content(metadata_mode=MetadataMode.NONE),
+                    clean_inline(node.get_content(metadata_mode=embed_mode)), s, s['page'])
     return chunks
+
+
+def table_as_records(text):
+    """Render a table chunk as one labelled line per row, for the LLM.
+
+    Wide markdown tables are where the answer model misread values (a score
+    reported under the neighbouring column). Spelling each cell out as
+    "column: value" removes the need to count pipes.
+    """
+    lines = text.splitlines()
+    table = [l for l in lines if l.strip().startswith('|')]
+    if len(table) < 2 or not TABLE_SEPARATOR_RE.match(table[1].strip()):
+        return text
+    split = lambda row: [clean_inline(c.replace('<br/>', ' ').replace('<br>', ' ')) for c in row.strip().strip('|').split('|')]
+    header = split(table[0])
+    out = [l for l in lines if not l.strip().startswith('|')]
+    label = ''
+    for row in table[2:]:
+        cells = split(row)
+        label = cells[0] or label   # grouped rows leave the label cell empty
+        pairs = [f'{h or "column " + str(i)}: {v}' for i, (h, v) in enumerate(zip(header[1:], cells[1:]), start=2) if v]
+        out.append(f"- {header[0] or 'row'} = {label}; " + '; '.join(pairs))
+    return '\n'.join(out)
+
+
+def passage_for_llm(chunk, table_records=True):
+    """The text an LLM sees for a chunk: tables as labelled records."""
+    if table_records and chunk.get('is_table'):
+        return table_as_records(chunk['text'])
+    return chunk['text']
 
 
 # ---------------------------------------------------------------- entry points
 
 def ingest_pdf(pdf_path, source_name=None, parser=None, chunk_tokens=DEFAULT_CHUNK_TOKENS,
-               chunk_overlap=DEFAULT_CHUNK_OVERLAP, first_chunk_id=0, embed_context=False):
+               chunk_overlap=DEFAULT_CHUNK_OVERLAP, first_chunk_id=0, embed_context=False, table_aware=True):
     """PDF -> chunks. Returns (chunks, scanned_page_numbers).
 
     scanned_page_numbers lists pages that came out empty; with the local
@@ -224,7 +328,7 @@ def ingest_pdf(pdf_path, source_name=None, parser=None, chunk_tokens=DEFAULT_CHU
     """
     source_name = source_name or os.path.basename(pdf_path)
     pages = parse_pdf(pdf_path, parser)
-    chunks = chunk_pages(pages, source_name, chunk_tokens, chunk_overlap, first_chunk_id, embed_context)
+    chunks = chunk_pages(pages, source_name, chunk_tokens, chunk_overlap, first_chunk_id, embed_context, table_aware)
     doc_id = file_digest(pdf_path)
     for chunk in chunks:
         chunk['doc_id'] = doc_id
@@ -232,11 +336,11 @@ def ingest_pdf(pdf_path, source_name=None, parser=None, chunk_tokens=DEFAULT_CHU
 
 
 def ingest_corpus(pdf_paths, parser=None, chunk_tokens=DEFAULT_CHUNK_TOKENS, chunk_overlap=DEFAULT_CHUNK_OVERLAP,
-                  embed_context=False):
+                  embed_context=False, table_aware=True):
     # Chunks from several PDFs in one list, with chunk_ids unique across all of them.
     corpus = []
     for path in pdf_paths:
         chunks, _ = ingest_pdf(path, parser=parser, chunk_tokens=chunk_tokens, chunk_overlap=chunk_overlap,
-                               first_chunk_id=len(corpus), embed_context=embed_context)
+                               first_chunk_id=len(corpus), embed_context=embed_context, table_aware=table_aware)
         corpus += chunks
     return corpus

@@ -15,6 +15,7 @@ import sqlite3
 import time
 from functools import lru_cache
 
+import httpx
 import numpy as np
 
 from config import get_secret
@@ -149,6 +150,12 @@ class GeminiEmbedder(Embedder):
                 # Free tier: 100 texts/minute. The error says how long to wait.
                 wait = re.search(r'retry in ([\d.]+)s', str(e))
                 time.sleep(float(wait.group(1)) + 1 if wait else 30)
+            except httpx.TransportError:
+                # Dropped connections happen on home networks; an upload
+                # embedding hundreds of chunks shouldn't fail on one.
+                if attempt == 7:
+                    raise
+                time.sleep(5 * (attempt + 1))
 
     def _embed(self, texts, is_query):
         vectors = []

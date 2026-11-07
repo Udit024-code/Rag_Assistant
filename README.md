@@ -21,7 +21,8 @@ A Retrieval-Augmented Generation (RAG) **research chatbot** for a library of pap
 ```
 PDF → parse to per-page markdown (LlamaParse, or local pymupdf4llm)
     → split at headings, tracking the section path across pages
-    → ~192-token chunks tagged with paper, section and page
+    → prose: ~192-token chunks; tables: their own chunks, caption + header
+      repeated in every piece; all tagged with paper, section and page
     → dense vector (gemini-embedding-2) + sparse BM25 vector
     → Qdrant Cloud, tagged with an owner (shared library or one visitor)
 ```
@@ -49,7 +50,7 @@ If the embedding API is unavailable, search falls back to BM25 + reranking (stil
 | Component | Choice | Why |
 |---|---|---|
 | PDF parsing | **LlamaParse** (`llama-cloud`), fallback `pymupdf4llm` | Markdown tables and headings; LlamaParse also OCRs scanned pages |
-| Chunking | Heading-aware sections + LlamaIndex `SentenceSplitter` (192 tokens) | Chunks never mix sections; each knows its paper and section for citations |
+| Chunking | Heading-aware sections + LlamaIndex `SentenceSplitter` (192 tokens); tables chunked separately (512 tokens) with caption and header in every piece | Chunks never mix sections; each knows its paper and section; no table row is separated from its column names |
 | Embeddings | **`gemini-embedding-2`** (768-dim) | Best on the eval set; free tier (100 texts/min), every vector cached on disk |
 | Keyword search | BM25 via `fastembed`, IDF computed by Qdrant | Finds exact terms (dataset names, metrics, numbers) that embeddings blur |
 | Vector database | **Qdrant Cloud** (free tier), hybrid query with RRF fusion | Persistent library; dense + sparse search and fusion in one request |
@@ -81,6 +82,8 @@ If the embedding API is unavailable, search falls back to BM25 + reranking (stil
 │   ├── compare_agent.py     # paper coverage: single search vs the agent
 │   ├── unanswerable.json    # plausible questions the papers don't answer
 │   ├── judge_answers.py     # LLM-judged answer quality
+│   ├── table_questions.py   # exact-answer questions generated from the papers' tables
+│   ├── table_eval.py        # table answers: old vs table-aware chunking
 │   ├── download_docs.py     # fetches the 4 eval papers
 │   ├── generate_testset.py  # drafts questions with an LLM
 │   └── review_app.py        # click-through review of drafted questions
@@ -202,15 +205,32 @@ Retrieval scores don't show what users read. `eval/judge_answers.py` generates a
 
 - *Faithfulness*: share of claims supported by the retrieved passages. *Citation accuracy*: share of cited claims whose cited passage supports them. *Gives up*: answers nothing even though the documents contain the answer (saying one part is missing is fine).
 - The two systems differ in both architecture and answer model, so this measures the whole upgrade, not the agent alone.
-- Checking the judge: the agent's lowest-scoring answer quoted real numbers under the wrong labels: ColBERT's MS MARCO score (0.401) presented as its BEIR average, and a 0.884 from a 12-column recall table whose headers the parser had shifted, credited to the wrong model. The judge was right. **Misreading wide tables is the main remaining failure mode**, rather than invented facts.
+- Checking the judge: the agent's lowest-scoring answer quoted real numbers under the wrong labels: ColBERT's MS MARCO score (0.401) presented as its BEIR average, and a 0.884 from a 12-column Recall@100 table credited to the wrong model. The judge was right. The cause was chunking: 50 of the 90 chunks holding table rows had been cut off from their header row and 75 from their caption, so the LLM saw grids of numbers without column names or the metric. See the table fix below.
 - Building this evaluation found two agent bugs, both fixed: the planner skipped searching for a real question that merely sounded off-topic (one of BEIR's example queries is about Game of Thrones), and gpt-oss could spend its whole token budget reasoning and return empty JSON, which would crash a request.
 - Small sample (26 questions × 2 systems) and one judge; useful for direction, not decimals.
+
+### Tables: the fix for misread numbers
+
+Before: tables were chunked like prose, so 50 of the 90 chunks holding table rows had lost their header row and 75 their caption. Now each table is chunked on its own, with its caption and header repeated in every piece (a table continued on the next page inherits them), and the LLM sees table chunks as labelled records instead of a pipe grid:
+
+```
+- Dataset = MS MARCO; Lexical BM25: 0.228; ... Late-Interaction ColBERT: 0.401; Re-ranking BM25+CE: 0.413
+```
+
+`eval/table_questions.py` generates questions straight from the papers' tables, so every one has an exact answer ("In the ColBERT paper, what is reported for MRR@10 on DeepCT in the table of results on TREC CAR?" → 33.2) and needs no judge. `eval/table_eval.py` runs the full agent on 20 of them:
+
+| Tables | Exact value in the answer | Value in the retrieved passages |
+|---|---|---|
+| Chunked like prose, shown as markdown | 8/20 | 18/20 |
+| **Table-aware chunks, shown as records** | **14/20** | **20/20** |
+
+All six remaining misses trace back to ambiguous generated questions rather than misreading (a classification made after seeing the results): two ask about one of two BEIR tables with near-identical captions, and the agent answered from the other table while naming its metric; three ask about grouped rows ("Single", "Multi", "Gold") that contain several sub-rows; one asks about "Wikipedia", the corpus of several BEIR datasets. On the 14 unambiguous questions the score went from 7/14 to 14/14. A stricter generator should require unique row labels and distinct captions.
 
 ---
 
 ## Possible improvements
 
-- Keep table headers attached to every row when chunking wide tables (the main remaining error)
+- Table questions with unique row labels and distinct captions, for a cleaner table benchmark
 - Hand-verify the test sets (the review app in `eval/review_app.py` makes it a click per question)
 - Run the single-search pipeline with gpt-oss-120b too, to separate the agent's effect from the bigger model's
 - Weighted fusion that leans on dense search for paraphrased questions

@@ -24,6 +24,7 @@ from typing import TypedDict
 from langgraph.config import get_stream_writer
 from langgraph.graph import END, START, StateGraph
 
+from ingest import passage_for_llm
 from llm import complete_json, stream_text
 
 PER_QUERY_K = 4      # reranked chunks kept per search
@@ -107,11 +108,12 @@ ANSWER_SYSTEM = """You are a research assistant. Answer using ONLY the numbered 
 - Use markdown; tables are welcome for comparisons. Be concise."""
 
 
-def build_agent(retriever, filters=None, library_titles=(), with_answer=True):
+def build_agent(retriever, filters=None, library_titles=(), with_answer=True, table_records=True):
     """Compile the agent for one request. filters (owners/doc_ids) limit what retrieve can see.
 
     with_answer=False stops after retrieval, for evaluating what evidence the
-    agent gathers without spending tokens on answers.
+    agent gathers without spending tokens on answers. table_records shows
+    table chunks to the LLM as labelled records (see ingest.table_as_records).
     """
     filters = filters or {}
     titles = '; '.join(library_titles) or '(unknown)'
@@ -162,7 +164,7 @@ def build_agent(retriever, filters=None, library_titles=(), with_answer=True):
         get_stream_writer()({'status': 'Checking the evidence covers the question'})
         # Full chunks (they're ~192 tokens): a truncated snippet can cut off the
         # table row that holds the answer and trigger a pointless extra search.
-        evidence = '\n'.join(f"- {_source_label(c)}: {c['text']}" for c in state['sources'])
+        evidence = '\n'.join(f"- {_source_label(c)}: {passage_for_llm(c, table_records)}" for c in state['sources'])
         try:
             result = complete_json([{'role': 'user', 'content': CHECK_PROMPT.format(
                 question=state['standalone'], evidence=evidence)}])
@@ -179,7 +181,8 @@ def build_agent(retriever, filters=None, library_titles=(), with_answer=True):
         write = get_stream_writer()
         write({'status': 'Writing the answer'})
         sources = state.get('sources', [])
-        context = '\n\n'.join(f'[{i}] {_source_label(c)}\n{c["text"]}' for i, c in enumerate(sources, start=1))
+        context = '\n\n'.join(f'[{i}] {_source_label(c)}\n{passage_for_llm(c, table_records)}'
+                              for i, c in enumerate(sources, start=1))
         messages = [{'role': 'system', 'content': ANSWER_SYSTEM}]
         messages += [{'role': m['role'], 'content': m['content']} for m in state.get('history', [])[-HISTORY_TURNS:]]
         messages.append({'role': 'user', 'content':

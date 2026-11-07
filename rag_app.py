@@ -1,6 +1,7 @@
 from groq import Groq
 
 from config import get_secret
+from ingest import passage_for_llm
 
 
 # Initialize the Groq client with a key from either .env or Streamlit secrets
@@ -17,7 +18,7 @@ def build_prompt(question, retrieved_chunks):
   context_parts = []
   for chunk in retrieved_chunks:
         page_num = chunk["page"]  # Matches ingest.py schema
-        chunk_text = chunk["text"] # Matches ingest.py schema
+        chunk_text = passage_for_llm(chunk)  # tables as labelled records
         paper = chunk.get("paper") or chunk["source"]
         section = f" | {chunk['section']}" if chunk.get("section") else ""
         context_parts.append(f"[{paper}, page {page_num}{section}]:\n{chunk_text}")
